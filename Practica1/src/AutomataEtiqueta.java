@@ -19,30 +19,6 @@ class AutomataEtiqueta extends Automata{
 	
 	String analizar(String cadena){
 		
-		/*int estado = 0;
-		
-		for(char token : cadena.toCharArray()){
-			if(Character.isLetter(token)){
-				estado = estados[estado][0];
-			}
-			
-			else if(token == '_'){
-				estado = estados[estado][1];
-			}
-			
-			else if(Character.isDigit(token)){
-				estado = estados[estado][2];
-			}
-			
-			else {
-				estado = estados[estado][3];
-			}
-			
-			
-		}
-		
-		if (estado == 9)return "NULL";
-		else return cadena;*/
 		if(cadena.matches("[A-Za-z]+([0-9]*[A-Za-z]*[_]*)*")){
 			if(cadena.length()<9)
 				return cadena;

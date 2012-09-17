@@ -7,16 +7,12 @@ import javax.swing.table.DefaultTableModel;
 public class AnalizarArchivo {
 
 	RandomAccessFile archivo = null;
-    FileReader fr;
-    BufferedReader br;
     InterpretarLinea interprete;
     String direccion;
 
     AnalizarArchivo(){
     	
     	archivo = null;
-        fr = null;
-        br = null;
         interprete = new InterpretarLinea();
     }
     
@@ -31,10 +27,7 @@ public class AnalizarArchivo {
     	while((linea=archivo.readLine())!=null){
     		contador++;
     		a.append(contador + "\t"+linea+"\n");
-    	}
-    		
-	       	  
-    	
+    	}	
     	archivo.seek(0);
   
     }
