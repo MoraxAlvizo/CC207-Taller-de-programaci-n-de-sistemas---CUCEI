@@ -9,8 +9,12 @@ public class InterpretarLinea {
 
 	//atributos
 	
-	String[] interpretacion; 
+	String etiqueta;
+	String codop;
+	String operando;
+	String modo;
 	Automata[] analizador;
+	Tabop tabop;
 	Errores err;
     String fileNam;
     FileWriter fw;
@@ -26,8 +30,13 @@ public class InterpretarLinea {
 		analizador[1] = new AutomataCodop();
 		analizador[2] = new AutomataOperandos();
 		
-	
-		interpretacion = new String[3];
+		try {
+			tabop = new Tabop();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		
 	}
 	
@@ -38,8 +47,8 @@ public class InterpretarLinea {
 			direccion = direccion.replace(".asm", ".inst");
 	        fw = new FileWriter(direccion, false);
 	        pw = new PrintWriter(fw);
-	        pw.println(String.format("%-8s  %-10s  %-10s  %s","LINEA","ETIQUETA","CODOP","OPERANDO"));
-	        pw.println("..........................................................");
+	        pw.println(String.format("%-8s  %-10s  %-10s  %-10s %s","LINEA","ETIQUETA","CODOP","OPERANDO","MODO"));
+	        pw.println(".......................................................................................");
 	    } catch (IOException e) {
 	        e.printStackTrace();
 	    } catch (Exception e) {
@@ -51,9 +60,10 @@ public class InterpretarLinea {
 	
 	boolean analizarLinea(DefaultTableModel a,DefaultTableModel errores,String linea,int contador){
 		
-		interpretacion[0] = new String("NULL");
-		interpretacion[1] = new String("NULL");
-		interpretacion[2] = new String("NULL");
+		etiqueta = new String("NULL");
+		codop = new String("NULL");
+		operando = new String("NULL");
+		modo = null;
 			
 		if (!linea.isEmpty()&&linea.charAt(0)!=';')
 		{
@@ -100,7 +110,7 @@ public class InterpretarLinea {
 				return false;
 			}
 			
-			else if(interpretacion[0].compareTo("NULL")==0 && interpretacion[1].compareTo("NULL") == 0 && interpretacion[2].compareTo("NULL") == 0){
+			else if(etiqueta.compareTo("NULL")==0 && codop.compareTo("NULL") == 0 && operando.compareTo("NULL") == 0){
 				err.resultado(errores, 3, contador);
 				return false;			
 			}
@@ -122,29 +132,55 @@ public class InterpretarLinea {
 	int analisis(String linea, int inicio, int fin){
 		
 		StringTokenizer tokens = new StringTokenizer(linea);
+		StringTokenizer aux_modo;
 		String token;
 	
 		for (int aux = inicio ; aux < fin ; aux++ ){
 			token = tokens.nextToken();
-			interpretacion[aux] = analizador[aux].analizar(token);
-			if (interpretacion[aux].compareTo("NULL")==0){
-				return aux;
-			}
+			
+			switch(aux){
+			
+			case 0:etiqueta = analizador[aux].analizar(token);
+					if (etiqueta.compareTo("NULL")==0){
+						return aux;
+					}
+					break;
+			case 1:codop = analizador[aux].analizar(token,modo,tabop);
+					if (codop.compareTo("NULL")==0){
+						return aux;
+					}
+					else{
+						if(codop.contains("|"))
+						{
+							aux_modo = new StringTokenizer(codop,"|");
+							codop = aux_modo.nextToken();
+							modo  = aux_modo.nextToken();
+						}
 				
-		}
+					}
+					break;
+			case 2:operando = analizador[aux].analizar(token);
+					if (operando.compareTo("NULL")==0){
+						return aux;
+					}
+					break;
+			}// fin del switch
+						
+		}// fin del for
 		return -1;
 	}
 	
 
 	public void resultado(DefaultTableModel a, int contador) {
 
-			Object[] fila = new Object[4];
+			Object[] fila = new Object[5];
 			fila[0]=contador; 
-			fila[1]=interpretacion[0];
-			fila[2]=interpretacion[1];
-			fila[3]=interpretacion[2];
+			fila[1]=etiqueta;
+			fila[2]=codop;
+			fila[3]=operando;
+			fila[4]=modo;
 			a.addRow(fila);
-			pw.println(String.format("%-8s  %-10s  %-10s  %s",contador,interpretacion[0],interpretacion[1],interpretacion[2]));
+			pw.println(String.format("%-8s  %-10s  %-10s  %-10s %s",contador,etiqueta,codop,operando,modo));
 		
 	}
 	
@@ -156,7 +192,7 @@ public class InterpretarLinea {
 	}
 	
 	boolean validarEND(){
-		if (interpretacion[1].compareToIgnoreCase("END")==0){
+		if (codop.compareToIgnoreCase("END")==0){
 			return true;
 		}
 		else return false;

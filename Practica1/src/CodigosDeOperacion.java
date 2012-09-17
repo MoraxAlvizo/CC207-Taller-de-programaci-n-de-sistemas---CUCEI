@@ -1,29 +1,65 @@
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 
 
 public class CodigosDeOperacion {
 	
 	String instruccion;
-	String modoDireccionamiento;
-	String codigoMaquina;
-	Integer calculados;
-	Integer porCalcular;
-	Integer sumaTotal;
+	ArrayList <ModosDireccionamiento> lista;
+	Iterator <ModosDireccionamiento> iterador;
 	
-	CodigosDeOperacion(String linea){
+	
+	CodigosDeOperacion(String instruccion,StringTokenizer separador){
 		
-		StringTokenizer separador = new StringTokenizer(linea,"|"); 
-		instruccion = separador.nextToken();
-		modoDireccionamiento = separador.nextToken();
-		codigoMaquina = separador.nextToken();
-		calculados = Integer.parseInt(separador.nextToken());
-		porCalcular = Integer.parseInt(separador.nextToken());
-		sumaTotal = Integer.parseInt(separador.nextToken());
-		
+		this.instruccion = instruccion;
+		lista = new ArrayList<ModosDireccionamiento>();
+		insertarModo(separador);		
 	}
 	
 	void mostrarCodigo(){
-		System.out.println(instruccion+modoDireccionamiento+codigoMaquina+calculados+porCalcular+sumaTotal);
+		ModosDireccionamiento aux;
+		System.out.println(instruccion);
+		iterador = lista.listIterator();
+    	while(iterador.hasNext()){
+    		aux= iterador.next();
+    		aux.mostrarModo();
+    	}
+	}
+	
+	boolean insertarModo(StringTokenizer separador){
+		
+		try{
+			ModosDireccionamiento aux = new ModosDireccionamiento();
+			aux.insertarModo(separador.nextToken());
+			aux.insertarCodigoMaquina(separador.nextToken());
+			aux.insertarCalculados(Integer.parseInt(separador.nextToken()));
+			aux.insertarPorCalcular(Integer.parseInt(separador.nextToken()));
+			aux.insertarSumaTotal(Integer.parseInt(separador.nextToken()));
+			lista.add(aux);
+			return true;
+		}
+		catch(Exception e){
+			return false;
+		}
+
+	}
+	
+	String regresarModos(){
+		ModosDireccionamiento aux;
+		String modos="";
+		
+		iterador = lista.listIterator();
+    	while(iterador.hasNext()){
+    		aux= iterador.next();
+    		modos = modos + aux.regresarModo()+"  ,";
+    	}
+    	
+    	return modos;
+	}
+	
+	String regresarInstruccion(){
+		return instruccion;
 	}
 
 }

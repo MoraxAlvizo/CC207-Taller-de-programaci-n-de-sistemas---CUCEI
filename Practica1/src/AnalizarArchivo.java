@@ -9,11 +9,13 @@ public class AnalizarArchivo {
 	RandomAccessFile archivo = null;
     InterpretarLinea interprete;
     String direccion;
+   
 
-    AnalizarArchivo(){
+    AnalizarArchivo() throws IOException{
     	
     	archivo = null;
         interprete = new InterpretarLinea();
+        
     }
     
     void abrirArchivo(File direccion) throws IOException{

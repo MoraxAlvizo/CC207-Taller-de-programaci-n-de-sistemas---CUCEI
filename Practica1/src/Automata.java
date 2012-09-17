@@ -1,5 +1,13 @@
 
-public abstract class Automata {
+public class Automata {
 	
-	abstract String analizar(String cadena);
+	String analizar(String cadena){
+		return null;
+	}
+
+	String analizar(String token, String modo, Tabop tabop) {
+		return null;
+	}
+
+	
 }

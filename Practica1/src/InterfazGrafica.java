@@ -65,14 +65,19 @@ public class InterfazGrafica extends JFrame {
 	public InterfazGrafica() {
 		setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\OMAR ALVIZO\\Pictures\\Motorola.png"));
 		
-		ensamblador = new AnalizarArchivo ();
+		try {
+			ensamblador = new AnalizarArchivo ();
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 		
 		setFont(new Font("Arial", Font.ITALIC, 12));
 		setResizable(false);
 		setBackground(SystemColor.windowText);
 		setTitle("CC207 TALLER PROGRAMACION DE SISTEMAS Practica 1");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 927, 529);
+		setBounds(100, 100, 1060, 532);
 		
 		
 		final JFileChooser fc = new JFileChooser();
@@ -87,7 +92,7 @@ public class InterfazGrafica extends JFrame {
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBackground(SystemColor.activeCaption);
 		scrollPane.setBorder(null);
-		scrollPane.setBounds(10, 30, 550, 300);
+		scrollPane.setBounds(10, 30, 448, 300);
 		contentPane.add(scrollPane);
 		
 		final JTextArea asm = new JTextArea();
@@ -100,7 +105,7 @@ public class InterfazGrafica extends JFrame {
 		scrollPane_1.setForeground(SystemColor.activeCaption);
 		scrollPane_1.setBorder(null);
 		scrollPane_1.setBackground(SystemColor.activeCaption);
-		scrollPane_1.setBounds(570, 30, 341, 300);
+		scrollPane_1.setBounds(470, 30, 576, 300);
 		contentPane.add(scrollPane_1);
 		
 		inicializarTablaAnalizar();
@@ -123,7 +128,7 @@ public class InterfazGrafica extends JFrame {
 		contentPane.add(lblNewLabel_1);
 		
 		JScrollPane scrollPane_2 = new JScrollPane();
-		scrollPane_2.setBounds(10, 357, 901, 112);
+		scrollPane_2.setBounds(10, 357, 1036, 112);
 		contentPane.add(scrollPane_2);
 
 		scrollPane_2.setViewportView(tabla_errores);
@@ -153,7 +158,7 @@ public class InterfazGrafica extends JFrame {
 		
 			}
 		});
-		btnAnalizar.setBounds(822, 7, 89, 23);
+		btnAnalizar.setBounds(957, 7, 89, 23);
 		contentPane.add(btnAnalizar);
 		
 		JMenuBar menuBar = new JMenuBar();
@@ -206,6 +211,7 @@ public class InterfazGrafica extends JFrame {
 		resultado.addColumn("Etiqueta");
 		resultado.addColumn("CODOP");
 		resultado.addColumn("Operando");
+		resultado.addColumn("Modos");
 		table_1 = new JTable(resultado);
 		table_1.setBorder(null);
 		table_1.setGridColor(SystemColor.activeCaption);
@@ -213,12 +219,15 @@ public class InterfazGrafica extends JFrame {
 		table_1.setForeground(Color.WHITE);
 		table_1.setBackground(SystemColor.activeCaption);
 		table_1.setEnabled(false);
-		table_1.getColumnModel().getColumn(0).setMaxWidth(50);
-		table_1.getColumnModel().getColumn(0).setPreferredWidth(50);
-		table_1.getColumnModel().getColumn(1).setMaxWidth(70);
-		table_1.getColumnModel().getColumn(1).setPreferredWidth(70);
-		table_1.getColumnModel().getColumn(2).setMaxWidth(80);
-		table_1.getColumnModel().getColumn(2).setPreferredWidth(80);
+		table_1.getColumnModel().getColumn(0).setMaxWidth(30);
+		table_1.getColumnModel().getColumn(0).setPreferredWidth(30);
+		table_1.getColumnModel().getColumn(1).setMaxWidth(60);
+		table_1.getColumnModel().getColumn(1).setPreferredWidth(60);
+		table_1.getColumnModel().getColumn(2).setMaxWidth(60);
+		table_1.getColumnModel().getColumn(2).setPreferredWidth(60);
+		table_1.getColumnModel().getColumn(3).setMaxWidth(70);
+		table_1.getColumnModel().getColumn(3).setPreferredWidth(70);
+		
 
 	}
 	
@@ -226,7 +235,7 @@ public class InterfazGrafica extends JFrame {
 		errores = new DefaultTableModel();
 		errores.addColumn("Linea");
 		errores.addColumn("Error");
-		errores.addColumn("Descripción del error");
+		errores.addColumn("Descripciï¿½n del error");
 		tabla_errores = new JTable(errores);
 		tabla_errores.setBorder(null);
 		tabla_errores.setGridColor(SystemColor.activeCaption);

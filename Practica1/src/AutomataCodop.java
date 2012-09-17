@@ -18,15 +18,27 @@ public class AutomataCodop extends Automata{
 	
 	//Metodos
 	
-	String analizar(String cadena){
+	String analizar(String cadena, String modo, Tabop t){
+		
+		CodigosDeOperacion aux;
 		
 		if(cadena.matches("[A-Za-z]+[.]?[A-Za-z]*")){
 			if(cadena.length()<6)
+			{
+				aux = t.busquedaBinaria(cadena);
+				if(aux != null){
+					modo = aux.regresarModos();
+					cadena = cadena + "|" +modo;
+					
+				}
 				return cadena;
+				
+			}			
 			else return "NULL";
 		}
 		else return "NULL";
 		
 	}
+
 
 }
