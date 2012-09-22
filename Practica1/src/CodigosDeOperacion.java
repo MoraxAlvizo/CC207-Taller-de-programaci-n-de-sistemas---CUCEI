@@ -1,15 +1,33 @@
+/*
+ * 
+ */
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class CodigosDeOperacion.
+ */
 public class CodigosDeOperacion {
 	
+	/** The instruccion. */
 	String instruccion;
+	
+	/** The lista. */
 	ArrayList <ModosDireccionamiento> lista;
+	
+	/** The iterador. */
 	Iterator <ModosDireccionamiento> iterador;
 	
 	
+	/**
+	 * Instantiates a new codigos de operacion.
+	 *
+	 * @param instruccion - nombre de la instruccion 
+	 * @param separador - Modo de direccionamiento a insertar
+	 */
 	CodigosDeOperacion(String instruccion,StringTokenizer separador){
 		
 		this.instruccion = instruccion;
@@ -17,6 +35,9 @@ public class CodigosDeOperacion {
 		insertarModo(separador);		
 	}
 	
+	/**
+	 * Mostrar codigo.
+	 */
 	void mostrarCodigo(){
 		ModosDireccionamiento aux;
 		System.out.println(instruccion);
@@ -27,6 +48,12 @@ public class CodigosDeOperacion {
     	}
 	}
 	
+	/**
+	 * Insertar modo.
+	 *
+	 * @param separador - Modo de direccionamiento a insertar
+	 * @return true, if successful
+	 */
 	boolean insertarModo(StringTokenizer separador){
 		
 		try{
@@ -45,6 +72,11 @@ public class CodigosDeOperacion {
 
 	}
 	
+	/**
+	 * Regresar modos.
+	 *
+	 * @return todos los modos de direccionamiento separados por ','
+	 */
 	String regresarModos(){
 		ModosDireccionamiento aux;
 		String modos="";
@@ -58,6 +90,11 @@ public class CodigosDeOperacion {
     	return modos;
 	}
 	
+	/**
+	 * Regresar si necesita oper.
+	 *
+	 * @return true, if successful
+	 */
 	boolean regresarSiNecesitaOper(){
 		
 		ModosDireccionamiento aux;
@@ -73,6 +110,11 @@ public class CodigosDeOperacion {
     	
 	}
 	
+	/**
+	 * Regresar instruccion.
+	 *
+	 * @return nombre de la instruccion
+	 */
 	String regresarInstruccion(){
 		return instruccion;
 	}

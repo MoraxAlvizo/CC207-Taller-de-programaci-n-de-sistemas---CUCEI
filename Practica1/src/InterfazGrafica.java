@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -33,32 +36,69 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class InterfazGrafica.
+ */
 public class InterfazGrafica extends JFrame {
 
-	/**
-	 * 
-	 */
+	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
+	
+	/** The content pane. */
 	private JPanel contentPane;
+	
+	/** The tabla_errores. */
 	private JTable tabla_errores;
+	
+	/** The resultado. */
 	DefaultTableModel resultado;
+	
+	/** The errores. */
 	DefaultTableModel errores;
+	
+	/** The fc. */
 	@SuppressWarnings("unused")
 	private JFileChooser fc;
+	
+	/** The ensamblador. */
 	public AnalizarArchivo ensamblador;
+	
+	/** The table_1. */
 	private JTable table_1;
+	
+	/** The bandera_analisis. */
 	boolean bandera_analisis;
 	
+	/**
+	 * The Class MyRenderer.
+	 */
 	private class MyRenderer extends DefaultTableCellRenderer {
 		
+		/** The Constant serialVersionUID. */
 		private static final long serialVersionUID = 1L;
+		
+		/** The background. */
 		Color background;
+		
+		/** The foreground. */
 		Color foreground;
+		
+		/**
+		 * Instantiates a new my renderer.
+		 *
+		 * @param background the background
+		 * @param foreground the foreground
+		 */
 		public MyRenderer (Color background,Color foreground) {
 			super();
 			this.background = background;
 			this.foreground = foreground;
 		}
+		
+		/* (non-Javadoc)
+		 * @see javax.swing.table.DefaultTableCellRenderer#getTableCellRendererComponent(javax.swing.JTable, java.lang.Object, boolean, boolean, int, int)
+		 */
 		public Component getTableCellRendererComponent(JTable table, Object value,boolean isSelected, boolean hasFocus, int row, int column) {
 			Component comp = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 			comp.setBackground(background);
@@ -69,6 +109,8 @@ public class InterfazGrafica extends JFrame {
 
 	/**
 	 * Launch the application.
+	 *
+	 * @param args the arguments
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -240,6 +282,9 @@ public class InterfazGrafica extends JFrame {
 	}
 	
 	
+	/**
+	 * Inicializar tabla analizar.
+	 */
 	public void inicializarTablaAnalizar(){
 		
 		MyRenderer r= new MyRenderer(Color.DARK_GRAY ,Color.LIGHT_GRAY );
@@ -273,6 +318,9 @@ public class InterfazGrafica extends JFrame {
 
 	}
 	
+	/**
+	 * Inicializar tabla errores.
+	 */
 	public void inicializarTablaErrores(){
 		MyRenderer r= new MyRenderer(Color.DARK_GRAY ,Color.LIGHT_GRAY);
 		errores = new DefaultTableModel();
@@ -296,6 +344,9 @@ public class InterfazGrafica extends JFrame {
 
 	}
 	
+	/**
+	 * Vaciar tablas.
+	 */
 	public void vaciarTablas(){
 		while (resultado.getRowCount()!=0){
             resultado.removeRow(0);

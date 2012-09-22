@@ -1,11 +1,29 @@
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class Automata.
+ */
 public class Automata {
 	
+	/**
+	 * Analizar.
+	 *
+	 * @param cadena a analizar
+	 * @return the string si la cadena es un operando
+	 */
 	static String analizar(String cadena){
 		return cadena;
 	}
 
 	
+	/**
+	 * Analizar.
+	 *
+	 * @param cadena a analizar
+	 * @param err archivo de errores
+	 * @param linea numero de linea 
+	 * @return cadena if pertenece a Etiquet else NULL
+	 */
 	static String analizar(String cadena,Errores err, int linea){
 		
 		if(cadena.matches("[A-Za-z]+([0-9]*[A-Za-z]*[_]*)*")){
@@ -23,6 +41,16 @@ public class Automata {
 		
 	}
 	
+	/**
+	 * Analizar.
+	 *
+	 * @param cadena a analizar
+	 * @param modo de direccionamiento 
+	 * @param t - tabop
+	 * @param err archivos de errores
+	 * @param linea - numero de linea
+	 * @return cadena if pertenece a CODOP else NULL
+	 */
 	static String analizar(String cadena, String modo, Tabop t, Errores err, int linea){
 		
 		CodigosDeOperacion aux;

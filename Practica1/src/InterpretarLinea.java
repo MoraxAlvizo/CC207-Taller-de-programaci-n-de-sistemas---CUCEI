@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -5,23 +8,51 @@ import java.util.*;
 import javax.swing.table.DefaultTableModel;
 
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class InterpretarLinea.
+ */
 public class InterpretarLinea {
 
 	//atributos
 	
+	/** The etiqueta. */
 	String etiqueta;
+	
+	/** The codop. */
 	String codop;
+	
+	/** The operando. */
 	String operando;
+	
+	/** The modo. */
 	String modo;
+	
+	/** The tabop. */
 	Tabop tabop;
+	
+	/** The err. */
 	Errores err;
+    
+    /** The file nam. */
     String fileNam;
+    
+    /** The fw. */
     FileWriter fw;
+    
+    /** The pw. */
     PrintWriter pw;
+    
+    /** The ints. */
     DefaultTableModel ints;
+    
+    /** The error. */
     boolean error;
 
 	
+	/**
+	 * Instantiates a new interpretar linea.
+	 */
 	InterpretarLinea(){
 		
 		try {
@@ -33,6 +64,13 @@ public class InterpretarLinea {
 		
 	}
 	
+	/**
+	 * Crear archivo.
+	 *
+	 * @param direccion donde se encuentra el archivo asm
+	 * @param ints tabla para el archivo ints
+	 * @param errores para el archivo errores
+	 */
 	void crearArchivo(String direccion,DefaultTableModel ints,DefaultTableModel errores){
 		try {
 			this.ints=ints;
@@ -52,6 +90,13 @@ public class InterpretarLinea {
 		
 	}
 	
+	/**
+	 * Analizar linea.
+	 *
+	 * @param linea a analizar
+	 * @param contador es el numero de linea
+	 * @return true, if n error
+	 */
 	boolean analizarLinea(String linea,int contador){
 		
 		etiqueta = new String("NULL");
@@ -127,12 +172,27 @@ public class InterpretarLinea {
 		
 	}
 	
+	/**
+	 * Eliminar comentarios.
+	 *
+	 * @param linea
+	 * @return linea sin comentarios
+	 */
 	String eliminarComentarios(String linea){
 		
 		StringTokenizer sin_comentarios = new StringTokenizer(linea, ";");
 		return sin_comentarios.nextToken();
 	}
 	
+	/**
+	 * Analisis.
+	 *
+	 * @param linea a analizar
+	 * @param inicio 0 - Etique, 1 - Codop, 2 - Operando 
+	 * @param fin 1 - Etique, 2 - Codop, 3 - Operando
+	 * @param contador no de linea
+	 * @return true, if successful
+	 */
 	boolean analisis(String linea, int inicio, int fin, int contador){
 		
 		StringTokenizer tokens = new StringTokenizer(linea);
@@ -186,6 +246,11 @@ public class InterpretarLinea {
 	}
 	
 
+	/**
+	 * Resultado.
+	 *
+	 * @param contador No. de linea
+	 */
 	public void resultado(int contador) {
 
 			Object[] fila = new Object[5];
@@ -200,12 +265,22 @@ public class InterpretarLinea {
 	}
 	
 	
+	/**
+	 * Cerrar archivo.
+	 *
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	public void cerrarArchivo() throws IOException{
 	    pw.close();
 	    fw.close();
 	    err.cerrarArchivo();
 	}
 	
+	/**
+	 * Validar end.
+	 *
+	 * @return true, if successful
+	 */
 	boolean validarEND(){
 		if (codop.compareToIgnoreCase("END")==0){
 			return true;

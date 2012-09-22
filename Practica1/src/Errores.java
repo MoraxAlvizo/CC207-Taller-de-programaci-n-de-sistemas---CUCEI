@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -5,13 +8,29 @@ import java.io.PrintWriter;
 import javax.swing.table.DefaultTableModel;
 
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class Errores.
+ */
 public class Errores {
 	
+	/** The errores. */
 	String[][] errores;
+    
+    /** The fw. */
     FileWriter fw;
+    
+    /** The pw. */
     PrintWriter pw;
+    
+    /** The err. */
     DefaultTableModel err;
 	
+	/**
+	 * Instantiates a new errores.
+	 *
+	 * @param err tabla de errores
+	 */
 	Errores(DefaultTableModel err){
 		this.err = err;
 		
@@ -37,6 +56,11 @@ public class Errores {
 			 
 	}
 	
+	/**
+	 * Crear archivo.
+	 *
+	 * @param direccion donde se encuentra el archivo .asm
+	 */
 	void crearArchivo(String direccion){
 		try {
 			
@@ -55,6 +79,13 @@ public class Errores {
 		
 	}
 	
+	/**
+	 * Resultado.
+	 *
+	 * @param donde fue el error: 0 - Etiqueta, 1 - Codop, 2 - Operando, 3 - linea
+	 * @param no_error
+	 * @param linea no. de linea
+	 */
 	public void resultado(int donde, int no_error,int linea) {
 		Object[] fila = new Object[3];
 		fila[0]=linea;
@@ -66,6 +97,11 @@ public class Errores {
 		
 	}
 	
+	/**
+	 * Cerrar archivo.
+	 *
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	public void cerrarArchivo() throws IOException{
 	    pw.close();
 	    fw.close();
