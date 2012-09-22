@@ -17,7 +17,6 @@ public class Tabop {
 		tabop = new File("./Tabop.txt");
 		abrirArchivo();
 		leerArchivo();
-		mostrarTabop();
 	}
 	
 	void abrirArchivo() throws IOException{

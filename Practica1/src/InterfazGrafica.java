@@ -2,7 +2,7 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
@@ -20,10 +20,16 @@ import javax.swing.JTable;
 import java.awt.Font;
 import java.io.IOException;
 import javax.swing.JButton;
+
+import java.awt.Component;
 import java.awt.Toolkit;
 import java.awt.Color;
 import java.awt.Cursor;
 import javax.swing.UIManager;
+import javax.swing.ImageIcon;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.SoftBevelBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 
 
@@ -42,6 +48,24 @@ public class InterfazGrafica extends JFrame {
 	public AnalizarArchivo ensamblador;
 	private JTable table_1;
 	boolean bandera_analisis;
+	
+	private class MyRenderer extends DefaultTableCellRenderer {
+		
+		private static final long serialVersionUID = 1L;
+		Color background;
+		Color foreground;
+		public MyRenderer (Color background,Color foreground) {
+			super();
+			this.background = background;
+			this.foreground = foreground;
+		}
+		public Component getTableCellRendererComponent(JTable table, Object value,boolean isSelected, boolean hasFocus, int row, int column) {
+			Component comp = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+			comp.setBackground(background);
+			comp.setForeground(foreground);
+			return comp;
+			}
+		}
 
 	/**
 	 * Launch the application.
@@ -63,7 +87,7 @@ public class InterfazGrafica extends JFrame {
 	 * Create the frame.
 	 */
 	public InterfazGrafica() {
-		setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\OMAR ALVIZO\\Pictures\\Motorola.png"));
+		setIconImage(Toolkit.getDefaultToolkit().getImage("/home/omar/Imágenes/procesador-icono-8477-128.png"));
 		
 		try {
 			ensamblador = new AnalizarArchivo ();
@@ -72,27 +96,31 @@ public class InterfazGrafica extends JFrame {
 			e2.printStackTrace();
 		}
 		
-		setFont(new Font("Arial", Font.ITALIC, 12));
+		setFont(new Font("Ubuntu", Font.ITALIC, 12));
 		setResizable(false);
 		setBackground(SystemColor.windowText);
-		setTitle("CC207 TALLER PROGRAMACION DE SISTEMAS Practica 1");
+		setTitle("CC207 TALLER PROGRAMACION DE SISTEMAS Practica 2");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1060, 532);
+		setBounds(100, 100, 1060, 602);
 		
 		
 		final JFileChooser fc = new JFileChooser();
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivo ensamblador","asm");
+		fc.setFileFilter(filter);
+		fc.setForeground(Color.LIGHT_GRAY);
+		fc.setBackground(Color.GRAY);
 		
 		contentPane = new JPanel();
 		contentPane.setForeground(Color.LIGHT_GRAY);
 		contentPane.setBackground(Color.GRAY);
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBackground(SystemColor.activeCaption);
 		scrollPane.setBorder(null);
-		scrollPane.setBounds(10, 30, 448, 300);
+		scrollPane.setBounds(10, 71, 448, 300);
 		contentPane.add(scrollPane);
 		
 		final JTextArea asm = new JTextArea();
@@ -105,39 +133,26 @@ public class InterfazGrafica extends JFrame {
 		scrollPane_1.setForeground(SystemColor.activeCaption);
 		scrollPane_1.setBorder(null);
 		scrollPane_1.setBackground(SystemColor.activeCaption);
-		scrollPane_1.setBounds(470, 30, 576, 300);
+		scrollPane_1.setBounds(470, 70, 576, 300);
 		contentPane.add(scrollPane_1);
 		
 		inicializarTablaAnalizar();
 		inicializarTablaErrores();
 		scrollPane_1.setViewportView(table_1);
 		
-		JLabel lblArchivoAsm = new JLabel("Archivo ASM");
-		lblArchivoAsm.setForeground(new Color(255, 255, 255));
-		lblArchivoAsm.setBounds(10, 11, 400, 14);
-		contentPane.add(lblArchivoAsm);
-		
-		JLabel lblNewLabel = new JLabel("Archivo INST");
-		lblNewLabel.setForeground(new Color(255, 255, 255));
-		lblNewLabel.setBounds(470, 11, 89, 14);
-		contentPane.add(lblNewLabel);
-		
-		JLabel lblNewLabel_1 = new JLabel("Errores");
-		lblNewLabel_1.setForeground(new Color(255, 255, 255));
-		lblNewLabel_1.setBounds(10, 339, 169, 14);
-		contentPane.add(lblNewLabel_1);
-		
 		JScrollPane scrollPane_2 = new JScrollPane();
-		scrollPane_2.setBounds(10, 357, 1036, 112);
+		scrollPane_2.setBounds(10, 427, 1036, 112);
 		contentPane.add(scrollPane_2);
 
 		scrollPane_2.setViewportView(tabla_errores);
 		
 		
 		JButton btnAnalizar = new JButton("Analizar");
+		btnAnalizar.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		btnAnalizar.setIconTextGap(1);
+		btnAnalizar.setIcon(new ImageIcon("/home/omar/Imágenes/lupa (1).png"));
 		btnAnalizar.setFocusPainted(false);
 		btnAnalizar.setFocusTraversalKeysEnabled(false);
-		btnAnalizar.setBorder(null);
 		btnAnalizar.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		btnAnalizar.setBackground(Color.GRAY);
 		btnAnalizar.setForeground(Color.WHITE);
@@ -146,8 +161,7 @@ public class InterfazGrafica extends JFrame {
 				
 				if (bandera_analisis == false ){
 					try {
-						ensamblador.analizar(resultado,errores);
-						bandera_analisis = true;
+						bandera_analisis = ensamblador.analizar(resultado,errores);
 					} catch (IOException e1) {
 						e1.printStackTrace();
 					}
@@ -158,8 +172,26 @@ public class InterfazGrafica extends JFrame {
 		
 			}
 		});
-		btnAnalizar.setBounds(957, 7, 89, 23);
+		btnAnalizar.setBounds(900, 5, 146, 58);
 		contentPane.add(btnAnalizar);
+		
+		JLabel lblArchivoAsm = new JLabel("ASM");
+		lblArchivoAsm.setIcon(new ImageIcon("/home/omar/Imágenes/icono.png"));
+		lblArchivoAsm.setForeground(new Color(255, 255, 255));
+		lblArchivoAsm.setBounds(12, 12, 400, 47);
+		contentPane.add(lblArchivoAsm);
+		
+		JLabel lblNewLabel = new JLabel("INST");
+		lblNewLabel.setIcon(new ImageIcon("/home/omar/Imágenes/aceptar-verde-ok-si-icono-8925-48.png"));
+		lblNewLabel.setForeground(new Color(255, 255, 255));
+		lblNewLabel.setBounds(470, 12, 107, 47);
+		contentPane.add(lblNewLabel);
+		
+		JLabel lblNewLabel_1 = new JLabel("Errores");
+		lblNewLabel_1.setIcon(new ImageIcon("/home/omar/Imágenes/icono_error.png"));
+		lblNewLabel_1.setForeground(new Color(255, 255, 255));
+		lblNewLabel_1.setBounds(20, 383, 192, 58);
+		contentPane.add(lblNewLabel_1);
 		
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
@@ -181,9 +213,12 @@ public class InterfazGrafica extends JFrame {
 	            if (returnVal == JFileChooser.APPROVE_OPTION) {
 	                
 	                try {
+	                	
+	                	asm.setText("");
 						ensamblador.abrirArchivo(fc.getSelectedFile());
 						ensamblador.leerArchivo(asm);
 						bandera_analisis = false;
+						vaciarTablas();
 						repaint(); // Para la grafica
 						validate(); // Para los JComponents
 						
@@ -206,10 +241,12 @@ public class InterfazGrafica extends JFrame {
 	
 	
 	public void inicializarTablaAnalizar(){
+		
+		MyRenderer r= new MyRenderer(Color.DARK_GRAY ,Color.LIGHT_GRAY );
 		resultado = new DefaultTableModel();
 		resultado.addColumn("No.");
 		resultado.addColumn("Etiqueta");
-		resultado.addColumn("CODOP");
+		resultado.addColumn("Cod.op");
 		resultado.addColumn("Operando");
 		resultado.addColumn("Modos");
 		table_1 = new JTable(resultado);
@@ -219,23 +256,29 @@ public class InterfazGrafica extends JFrame {
 		table_1.setForeground(Color.WHITE);
 		table_1.setBackground(SystemColor.activeCaption);
 		table_1.setEnabled(false);
+		table_1.getColumnModel().getColumn(0).setHeaderRenderer(r);
 		table_1.getColumnModel().getColumn(0).setMaxWidth(30);
 		table_1.getColumnModel().getColumn(0).setPreferredWidth(30);
+		table_1.getColumnModel().getColumn(1).setHeaderRenderer(r);
 		table_1.getColumnModel().getColumn(1).setMaxWidth(60);
 		table_1.getColumnModel().getColumn(1).setPreferredWidth(60);
+		table_1.getColumnModel().getColumn(2).setHeaderRenderer(r);
 		table_1.getColumnModel().getColumn(2).setMaxWidth(60);
 		table_1.getColumnModel().getColumn(2).setPreferredWidth(60);
+		table_1.getColumnModel().getColumn(3).setHeaderRenderer(r);
 		table_1.getColumnModel().getColumn(3).setMaxWidth(100);
 		table_1.getColumnModel().getColumn(3).setPreferredWidth(100);
+		table_1.getColumnModel().getColumn(4).setHeaderRenderer(r);
 		
 
 	}
 	
 	public void inicializarTablaErrores(){
+		MyRenderer r= new MyRenderer(Color.DARK_GRAY ,Color.LIGHT_GRAY);
 		errores = new DefaultTableModel();
 		errores.addColumn("Linea");
 		errores.addColumn("Error");
-		errores.addColumn("Descripci�n del error");
+		errores.addColumn("Descripción del error");
 		tabla_errores = new JTable(errores);
 		tabla_errores.setBorder(null);
 		tabla_errores.setGridColor(SystemColor.activeCaption);
@@ -245,8 +288,20 @@ public class InterfazGrafica extends JFrame {
 		tabla_errores.setEnabled(false);
 		tabla_errores.getColumnModel().getColumn(0).setMaxWidth(50);
 		tabla_errores.getColumnModel().getColumn(0).setPreferredWidth(50);
+		tabla_errores.getColumnModel().getColumn(0).setHeaderRenderer(r);
 		tabla_errores.getColumnModel().getColumn(1).setMaxWidth(50);
 		tabla_errores.getColumnModel().getColumn(1).setPreferredWidth(50);
+		tabla_errores.getColumnModel().getColumn(1).setHeaderRenderer(r);
+		tabla_errores.getColumnModel().getColumn(2).setHeaderRenderer(r);
 
+	}
+	
+	public void vaciarTablas(){
+		while (resultado.getRowCount()!=0){
+            resultado.removeRow(0);
+		}
+		while (errores.getRowCount()!=0){
+            errores.removeRow(0);
+		}
 	}
 }

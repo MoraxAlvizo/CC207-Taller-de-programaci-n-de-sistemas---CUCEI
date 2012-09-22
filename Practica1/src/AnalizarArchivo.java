@@ -34,7 +34,7 @@ public class AnalizarArchivo {
   
     }
     
-    void analizar(DefaultTableModel ints, DefaultTableModel errores)throws IOException{
+    boolean analizar(DefaultTableModel ints, DefaultTableModel errores)throws IOException{
     	String linea;
     	int contador=0;
     	if(verificarArchivo())
@@ -54,10 +54,12 @@ public class AnalizarArchivo {
     		interprete.cerrarArchivo();
         	archivo.seek(0);
         	JOptionPane.showMessageDialog(null,"Archivo creado en: "+ direccion.replace(".asm", ".ints"));
+        	return true;
     	}
     	
     	else{
     		JOptionPane.showMessageDialog(null,"Abrir primero algun archivo");
+    		return false;
     	}
   
     	

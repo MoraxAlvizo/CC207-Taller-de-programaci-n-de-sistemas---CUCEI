@@ -58,7 +58,7 @@ public class Errores {
 	public void resultado(int donde, int no_error,int linea) {
 		Object[] fila = new Object[3];
 		fila[0]=linea;
-		fila[1]=no_error;
+		fila[1]=donde +""+ no_error;
 		fila[2]=errores[donde][no_error];
 
 		err.addRow(fila);

@@ -138,7 +138,7 @@ public class InterpretarLinea {
 		StringTokenizer tokens = new StringTokenizer(linea);
 		StringTokenizer aux_modo;
 		String token;
-		boolean error_oper=false;
+		boolean error_oper=true;
 	
 		for (int aux = inicio ; aux < fin ; aux++ ){
 			token = tokens.nextToken();
