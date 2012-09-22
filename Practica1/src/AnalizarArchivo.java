@@ -34,20 +34,20 @@ public class AnalizarArchivo {
   
     }
     
-    void analizar(DefaultTableModel a, DefaultTableModel errores)throws IOException{
+    void analizar(DefaultTableModel ints, DefaultTableModel errores)throws IOException{
     	String linea;
     	int contador=0;
     	if(verificarArchivo())
     	{
-    		interprete.crearArchivo(direccion);
+    		interprete.crearArchivo(direccion,ints,errores);
     		while((linea=archivo.readLine())!=null){
         		contador++;
         		
-        		if(interprete.analizarLinea(a,errores,linea,contador)&&!interprete.validarEND()){
-        			interprete.resultado(a, contador);
+        		if(interprete.analizarLinea(linea,contador)&&!interprete.validarEND()){
+        			interprete.resultado( contador);
         		}
         		if(interprete.validarEND()){
-        			interprete.resultado(a, contador);
+        			interprete.resultado( contador);
         			break;
         		}
         	}

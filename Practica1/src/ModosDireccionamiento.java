@@ -35,5 +35,9 @@ public class ModosDireccionamiento {
 	String regresarModo(){
 		return modoDireccionamiento;
 	}
+	
+	Integer regresarPorCalcular(){
+		return porCalcular;
+	}
 
 }

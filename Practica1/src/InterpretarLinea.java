@@ -13,22 +13,16 @@ public class InterpretarLinea {
 	String codop;
 	String operando;
 	String modo;
-	Automata[] analizador;
 	Tabop tabop;
 	Errores err;
     String fileNam;
     FileWriter fw;
     PrintWriter pw;
-    int error;
+    DefaultTableModel ints;
+    boolean error;
 
 	
 	InterpretarLinea(){
-		
-		// automata completo
-		analizador = new Automata[3];
-		analizador[0] = new AutomataEtiqueta();
-		analizador[1] = new AutomataCodop();
-		analizador[2] = new AutomataOperandos();
 		
 		try {
 			tabop = new Tabop();
@@ -37,12 +31,12 @@ public class InterpretarLinea {
 			e.printStackTrace();
 		}
 		
-		
 	}
 	
-	void crearArchivo(String direccion){
+	void crearArchivo(String direccion,DefaultTableModel ints,DefaultTableModel errores){
 		try {
-			err = new Errores();
+			this.ints=ints;
+			err = new Errores(errores);
 			err.crearArchivo(direccion);
 			direccion = direccion.replace(".asm", ".inst");
 	        fw = new FileWriter(direccion, false);
@@ -58,7 +52,7 @@ public class InterpretarLinea {
 		
 	}
 	
-	boolean analizarLinea(DefaultTableModel a,DefaultTableModel errores,String linea,int contador){
+	boolean analizarLinea(String linea,int contador){
 		
 		etiqueta = new String("NULL");
 		codop = new String("NULL");
@@ -71,8 +65,7 @@ public class InterpretarLinea {
 			StringTokenizer tokens = new StringTokenizer(linea);
 			int menu=tokens.countTokens();
 			Character primero = linea.charAt(0);
-			System.out.println(contador + "\t cantidad tokens :" +menu+"\n");
-			error=-1;
+			error=true;
 			
 			switch(menu){
 			
@@ -80,40 +73,51 @@ public class InterpretarLinea {
 						return false; 
 				case 1:
 					if (primero.compareTo(' ') ==  0 || primero.compareTo('\t') == 0){
-						error = analisis(linea,1,2);
+						error = analisis(linea,1,2,contador);
+					}
+					else{
+						err.resultado(3,1, contador);
+						return false;
 					}
 					break;
 				case 2:
 					if (primero.compareTo(' ') !=  0 && primero.compareTo('\t') != 0){
-						error=analisis(linea,0,2);
-
+						error = analisis(linea,0,2,contador);
 					}
 					
 					else{
-						error = analisis(linea,1,3);
+						error = analisis(linea,1,3,contador);
 					}	
 					
 					break;
 					
 				case 3:
 					if (primero.compareTo(' ') !=  0 && primero.compareTo('\t') != 0){
-						error = analisis(linea,0,3);
+						error = analisis(linea,0,3,contador);
+					}
+					
+					else{
+						err.resultado(3,1, contador);
+						return false;
 					}
 					break;
 					
 				
-				default: error = 3;
+				default: 
+					err.resultado(3,0, contador);
+					return false;
 			
 			}// fin del switch
-			if(error!=-1){
-				err.resultado(errores, error, contador);
-				return false;
-			}
 			
-			else if(etiqueta.compareTo("NULL")==0 && codop.compareTo("NULL") == 0 && operando.compareTo("NULL") == 0){
-				err.resultado(errores, 3, contador);
+			/*if(etiqueta.compareTo("NULL")==0 && codop.compareTo("NULL") == 0 && operando.compareTo("NULL") == 0){
+				err.resultado(3,1, contador);
 				return false;			
-			}
+			}*/
+			
+			if(error == true){
+				return false;
+			}	
+			
 			else
 				return true;
 		}// fin del if
@@ -129,25 +133,26 @@ public class InterpretarLinea {
 		return sin_comentarios.nextToken();
 	}
 	
-	int analisis(String linea, int inicio, int fin){
+	boolean analisis(String linea, int inicio, int fin, int contador){
 		
 		StringTokenizer tokens = new StringTokenizer(linea);
 		StringTokenizer aux_modo;
 		String token;
+		boolean error_oper=false;
 	
 		for (int aux = inicio ; aux < fin ; aux++ ){
 			token = tokens.nextToken();
 			
 			switch(aux){
 			
-			case 0:etiqueta = analizador[aux].analizar(token);
+			case 0:etiqueta = Automata.analizar(token,err,contador);
 					if (etiqueta.compareTo("NULL")==0){
-						return aux;
+						return true;
 					}
 					break;
-			case 1:codop = analizador[aux].analizar(token,modo,tabop);
+			case 1:codop = Automata.analizar(token,modo,tabop,err,contador);
 					if (codop.compareTo("NULL")==0){
-						return aux;
+						return true;
 					}
 					else{
 						if(codop.contains("|"))
@@ -155,23 +160,33 @@ public class InterpretarLinea {
 							aux_modo = new StringTokenizer(codop,"|");
 							codop = aux_modo.nextToken();
 							modo  = aux_modo.nextToken();
+							error_oper = Boolean.parseBoolean(aux_modo.nextToken());
+							if (contador == 8){
+								System.out.println("error _oper = "+ error_oper);
+							}
+							if ( error_oper == true && fin < 3){
+								err.resultado(2,1,contador);
+								return true;
+							}
 						}
 				
 					}
 					break;
-			case 2:operando = analizador[aux].analizar(token);
-					if (operando.compareTo("NULL")==0){
-						return aux;
+			case 2:operando = Automata.analizar(token);
+					if (error_oper == false && operando.compareTo("NULL")!=0){
+						err.resultado(2,0,contador);
+						return true;
 					}
+					
 					break;
 			}// fin del switch
 						
 		}// fin del for
-		return -1;
+		return false;
 	}
 	
 
-	public void resultado(DefaultTableModel a, int contador) {
+	public void resultado(int contador) {
 
 			Object[] fila = new Object[5];
 			fila[0]=contador; 
@@ -179,7 +194,7 @@ public class InterpretarLinea {
 			fila[2]=codop;
 			fila[3]=operando;
 			fila[4]=modo;
-			a.addRow(fila);
+			ints.addRow(fila);
 			pw.println(String.format("%-8s  %-10s  %-10s  %-10s %s",contador,etiqueta,codop,operando,modo));
 		
 	}

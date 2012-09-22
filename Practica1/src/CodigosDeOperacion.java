@@ -52,10 +52,25 @@ public class CodigosDeOperacion {
 		iterador = lista.listIterator();
     	while(iterador.hasNext()){
     		aux= iterador.next();
-    		modos = modos + aux.regresarModo()+"  ,";
+    		modos = modos + aux.regresarModo()+", ";
     	}
     	
     	return modos;
+	}
+	
+	boolean regresarSiNecesitaOper(){
+		
+		ModosDireccionamiento aux;
+		
+		iterador = lista.listIterator();
+    	while(iterador.hasNext()){
+    		aux= iterador.next();
+    		if(aux.regresarPorCalcular() > 0){
+    			return true;
+    		}
+    	}
+    	return false;
+    	
 	}
 	
 	String regresarInstruccion(){

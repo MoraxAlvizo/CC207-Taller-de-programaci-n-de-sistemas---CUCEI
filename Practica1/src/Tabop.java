@@ -64,10 +64,10 @@ public class Tabop {
     CodigosDeOperacion busquedaBinaria(String codop){
     	
     	CodigosDeOperacion aux = null;
-    	int izq=0,der=lista.size(),cen;
+    	int izq=0,der=lista.size()-1,cen;
     	boolean bandera = false;
     	while (izq <= der && bandera == false){
-    		cen=(izq+der)/2;
+    		cen=(int)((izq+der)/2);
     		aux=lista.get(cen);
     		if (codop.compareTo(aux.regresarInstruccion())==0){
     			return aux;

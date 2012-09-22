@@ -119,7 +119,7 @@ public class InterfazGrafica extends JFrame {
 		
 		JLabel lblNewLabel = new JLabel("Archivo INST");
 		lblNewLabel.setForeground(new Color(255, 255, 255));
-		lblNewLabel.setBounds(570, 11, 89, 14);
+		lblNewLabel.setBounds(470, 11, 89, 14);
 		contentPane.add(lblNewLabel);
 		
 		JLabel lblNewLabel_1 = new JLabel("Errores");
@@ -225,8 +225,8 @@ public class InterfazGrafica extends JFrame {
 		table_1.getColumnModel().getColumn(1).setPreferredWidth(60);
 		table_1.getColumnModel().getColumn(2).setMaxWidth(60);
 		table_1.getColumnModel().getColumn(2).setPreferredWidth(60);
-		table_1.getColumnModel().getColumn(3).setMaxWidth(70);
-		table_1.getColumnModel().getColumn(3).setPreferredWidth(70);
+		table_1.getColumnModel().getColumn(3).setMaxWidth(100);
+		table_1.getColumnModel().getColumn(3).setPreferredWidth(100);
 		
 
 	}
