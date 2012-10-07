@@ -8,17 +8,17 @@ import java.util.StringTokenizer;
 
 // TODO: Auto-generated Javadoc
 /**
- * The Class CodigosDeOperacion.
+ * La Clase CodigosDeOperacion. Es la clase al almacena un Codop y sus diferentes modos de direccionamiento
  */
 public class CodigosDeOperacion {
 	
-	/** The instruccion. */
+	/** La instruccion. Almacena el nombre del Codop*/
 	String instruccion;
 	
-	/** The lista. */
+	/** La lista. Almacena una lista de los distintos modos de direccionamiento del Codop*/
 	ArrayList <ModosDireccionamiento> lista;
 	
-	/** The iterador. */
+	/** El iterador. Atributo para recorrer la lista de modos de direccionamiento*/
 	Iterator <ModosDireccionamiento> iterador;
 	
 	
@@ -36,7 +36,7 @@ public class CodigosDeOperacion {
 	}
 	
 	/**
-	 * Mostrar codigo.
+	 * Mostrar codigo. Muestra un codigo en consola y sus diferentes modos de direccionamiento
 	 */
 	void mostrarCodigo(){
 		ModosDireccionamiento aux;
@@ -49,7 +49,7 @@ public class CodigosDeOperacion {
 	}
 	
 	/**
-	 * Insertar modo.
+	 * Insertar modo. Inserta un modo de direccionamiento a la lista
 	 *
 	 * @param separador - Modo de direccionamiento a insertar
 	 * @return true, if successful
@@ -73,7 +73,7 @@ public class CodigosDeOperacion {
 	}
 	
 	/**
-	 * Regresar modos.
+	 * Regresar modos. regresa una cadena con todos los modos de direccionamiento posibles para este Codop
 	 *
 	 * @return todos los modos de direccionamiento separados por ','
 	 */
@@ -84,14 +84,17 @@ public class CodigosDeOperacion {
 		iterador = lista.listIterator();
     	while(iterador.hasNext()){
     		aux= iterador.next();
-    		modos = modos + aux.regresarModo()+", ";
+    		modos = modos + aux.regresarModo();
+    		if(iterador.hasNext()){
+    			modos = modos + ", ";
+    		}
     	}
     	
     	return modos;
 	}
 	
 	/**
-	 * Regresar si necesita oper.
+	 * Regresar si necesita oper. Metodo para validar si el codigo de operacion necesita operandos o no
 	 *
 	 * @return true, if successful
 	 */
@@ -111,12 +114,16 @@ public class CodigosDeOperacion {
 	}
 	
 	/**
-	 * Regresar instruccion.
+	 * Regresar instruccion. Regresa el nombre del codop
 	 *
 	 * @return nombre de la instruccion
 	 */
 	String regresarInstruccion(){
 		return instruccion;
+	}
+	
+	ArrayList<ModosDireccionamiento> regresarListaModos(){
+		return lista;
 	}
 
 }

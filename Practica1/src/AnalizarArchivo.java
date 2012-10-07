@@ -9,17 +9,17 @@ import javax.swing.table.DefaultTableModel;
 
 // TODO: Auto-generated Javadoc
 /**
- * The Class AnalizarArchivo.
+ * La Clase AnalizarArchivo. Clase que se dedica a analizar todo el archivo asm
  */
 public class AnalizarArchivo {
 
-	/** The archivo. */
+	/** El archivo. ruta del archivo a analizar */
 	RandomAccessFile archivo = null;
     
-    /** The interprete. */
+    /** El interprete. Atributo que analizara linea por linea */
     InterpretarLinea interprete;
     
-    /** The direccion. */
+    /** El direccion. nombre de la direccion */
     String direccion;
    
 
@@ -36,7 +36,7 @@ public class AnalizarArchivo {
     }
     
     /**
-     * Abrir archivo.
+     * Abrir archivo. Metodo que se encarga de abrir el archivo asm
      *
      * @param direccion donde se encuentra el archivo
      * @throws IOException Signals that an I/O exception has occurred.
@@ -47,7 +47,7 @@ public class AnalizarArchivo {
     }// fin del metodo
     
     /**
-     * Leer archivo.
+     * Leer archivo. Metodo en el cual se muestra el archivo asm en la interfaz grafica
      *
      * @param a donde se va mostrar el archivo
      * @throws IOException Signals that an I/O exception has occurred.
@@ -64,7 +64,7 @@ public class AnalizarArchivo {
     }
     
     /**
-     * Analizar.
+     * Analizar. Metodo que analiza el archivo asm
      *
      * @param ints Tabla para mostrar el archivo.inst
      * @param errores Tabla para mostrar el archivo.err
@@ -74,21 +74,24 @@ public class AnalizarArchivo {
     boolean analizar(DefaultTableModel ints, DefaultTableModel errores)throws IOException{
     	String linea;
     	int contador=0;
+    	boolean banderaEND = false;
     	if(verificarArchivo())
     	{
     		interprete.crearArchivo(direccion,ints,errores);
     		while((linea=archivo.readLine())!=null){
         		contador++;
         		
-        		if(interprete.analizarLinea(linea,contador)&&!interprete.validarEND()){
+        		if(interprete.analizarLinea(linea,contador)&&!(banderaEND=interprete.validarEND())){
         			interprete.resultado( contador);
         		}
-        		if(interprete.validarEND()){
+        		else if(banderaEND){
         			interprete.resultado( contador);
         			break;
         		}
+        		else continue;
         	}
-    		interprete.cerrarArchivo();
+    		
+    		interprete.cerrarArchivo(banderaEND);
         	archivo.seek(0);
         	JOptionPane.showMessageDialog(null,"Archivo creado en: "+ direccion.replace(".asm", ".ints"));
         	return true;
@@ -103,7 +106,7 @@ public class AnalizarArchivo {
     }
     
     /**
-     * Verificar archivo.
+     * Verificar archivo. Verifica si el archivo fue abierto con exito
      *
      * @return true, if successful
      */

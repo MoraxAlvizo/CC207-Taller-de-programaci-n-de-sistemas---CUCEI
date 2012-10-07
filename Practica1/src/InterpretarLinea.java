@@ -10,43 +10,46 @@ import javax.swing.table.DefaultTableModel;
 
 // TODO: Auto-generated Javadoc
 /**
- * The Class InterpretarLinea.
+ * The Class InterpretarLinea. Clase que se encarga de interpretar una linea del archivo .asm y 
+ * dar un resultado si se va al archivo .inst o al archivo de errores
  */
 public class InterpretarLinea {
 
-	//atributos
 	
-	/** The etiqueta. */
+	/** La etiqueta. */
 	String etiqueta;
 	
-	/** The codop. */
+	/** El codop. */
 	String codop;
 	
-	/** The operando. */
+	/** Codigo de operacion. */
+	CodigosDeOperacion codigooperacion;
+	
+	/** El operando. */
 	String operando;
 	
-	/** The modo. */
+	/** El modo. */
 	String modo;
 	
-	/** The tabop. */
+	/** El tabop. atributp donde se encuentran todos los codigos de operaciones validos*/
 	Tabop tabop;
 	
-	/** The err. */
+	/** El err. atributo para el manejo de errores */
 	Errores err;
     
-    /** The file nam. */
+    /** El file nam. direccion del archivo */
     String fileNam;
     
-    /** The fw. */
+    /** El fw.*/
     FileWriter fw;
     
-    /** The pw. */
+    /** El pw. */
     PrintWriter pw;
     
-    /** The ints. */
+    /** El ints. Tabla el manejo del archivo .inst*/
     DefaultTableModel ints;
     
-    /** The error. */
+    /** El error. Si esta en true hubo un error si esta el false no */
     boolean error;
 
 	
@@ -65,7 +68,7 @@ public class InterpretarLinea {
 	}
 	
 	/**
-	 * Crear archivo.
+	 * Crear archivo. Crea todos lo archivos necesarios para guardar los resultados del analisis
 	 *
 	 * @param direccion donde se encuentra el archivo asm
 	 * @param ints tabla para el archivo ints
@@ -91,7 +94,7 @@ public class InterpretarLinea {
 	}
 	
 	/**
-	 * Analizar linea.
+	 * Analizar linea. Metodo para definir el tipo de analisis
 	 *
 	 * @param linea a analizar
 	 * @param contador es el numero de linea
@@ -100,7 +103,7 @@ public class InterpretarLinea {
 	boolean analizarLinea(String linea,int contador){
 		
 		etiqueta = new String("NULL");
-		codop = new String("NULL");
+		codop = null;
 		operando = new String("NULL");
 		modo = null;
 			
@@ -154,10 +157,6 @@ public class InterpretarLinea {
 			
 			}// fin del switch
 			
-			/*if(etiqueta.compareTo("NULL")==0 && codop.compareTo("NULL") == 0 && operando.compareTo("NULL") == 0){
-				err.resultado(3,1, contador);
-				return false;			
-			}*/
 			
 			if(error == true){
 				return false;
@@ -173,7 +172,7 @@ public class InterpretarLinea {
 	}
 	
 	/**
-	 * Eliminar comentarios.
+	 * Eliminar comentarios. Elimina los comentarios de la linea que se va a analizar
 	 *
 	 * @param linea
 	 * @return linea sin comentarios
@@ -185,7 +184,7 @@ public class InterpretarLinea {
 	}
 	
 	/**
-	 * Analisis.
+	 * Analisis. Metodo para analizar la linea
 	 *
 	 * @param linea a analizar
 	 * @param inicio 0 - Etique, 1 - Codop, 2 - Operando 
@@ -196,9 +195,8 @@ public class InterpretarLinea {
 	boolean analisis(String linea, int inicio, int fin, int contador){
 		
 		StringTokenizer tokens = new StringTokenizer(linea);
-		StringTokenizer aux_modo;
 		String token;
-		boolean error_oper=true;
+		StringTokenizer obtenermodo;
 	
 		for (int aux = inicio ; aux < fin ; aux++ ){
 			token = tokens.nextToken();
@@ -210,32 +208,50 @@ public class InterpretarLinea {
 						return true;
 					}
 					break;
-			case 1:codop = Automata.analizar(token,modo,tabop,err,contador);
-					if (codop.compareTo("NULL")==0){
-						return true;
+			case 1:codigooperacion = Automata.analizar(token,modo,tabop,err,contador);
+					if (codigooperacion == null){
+						if(token.compareTo("ORG") == 0 || token.compareTo("END") == 0){
+							codop = token;
+							break;
+						}
+						else{
+							return true;
+						}
 					}
 					else{
-						if(codop.contains("|"))
-						{
-							aux_modo = new StringTokenizer(codop,"|");
-							codop = aux_modo.nextToken();
-							modo  = aux_modo.nextToken();
-							error_oper = Boolean.parseBoolean(aux_modo.nextToken());
-							if (contador == 8){
-								System.out.println("error _oper = "+ error_oper);
+							codop = codigooperacion.regresarInstruccion();
+							modo = codigooperacion.regresarModos();
+							if ( codigooperacion.regresarSiNecesitaOper() == true && fin < 3){
+								if ( modo.compareTo("INH")!=0 && modo.compareTo("IMM")!=0){
+									err.resultado(2,1,contador);
+									return true;
+								}
+									
 							}
-							if ( error_oper == true && fin < 3){
-								err.resultado(2,1,contador);
-								return true;
-							}
-						}
-				
 					}
 					break;
-			case 2:operando = Automata.analizar(token);
-					if (error_oper == false && operando.compareTo("NULL")!=0){
+			case 2:operando = Automata.analizar(token,err,codigooperacion,contador);
+					if (codigooperacion.regresarSiNecesitaOper() == false){
 						err.resultado(2,0,contador);
 						return true;
+					}
+					
+					else if (operando != null && operando.compareTo("error")==0){
+						return true;
+					}
+					
+					else{
+						
+						try{
+							obtenermodo = new StringTokenizer(operando,"|");
+							operando = obtenermodo.nextToken();
+							modo = obtenermodo.nextToken();
+						}
+						catch(Exception e){
+							err.resultado(4, 0, contador);
+							return true;
+						}
+						
 					}
 					
 					break;
@@ -247,7 +263,7 @@ public class InterpretarLinea {
 	
 
 	/**
-	 * Resultado.
+	 * Resultado. Escribe el resultado el archivo .inst si no hubo ningun error
 	 *
 	 * @param contador No. de linea
 	 */
@@ -266,18 +282,21 @@ public class InterpretarLinea {
 	
 	
 	/**
-	 * Cerrar archivo.
+	 * Cerrar archivo. Metodo que cierra todos los archivos
 	 *
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public void cerrarArchivo() throws IOException{
+	public void cerrarArchivo(boolean banderaEND) throws IOException{
+		
+		if(banderaEND == false)
+			err.resultado(3,2,0);
 	    pw.close();
 	    fw.close();
 	    err.cerrarArchivo();
 	}
 	
 	/**
-	 * Validar end.
+	 * Validar end. Valida que el codigo de operacion sea END
 	 *
 	 * @return true, if successful
 	 */

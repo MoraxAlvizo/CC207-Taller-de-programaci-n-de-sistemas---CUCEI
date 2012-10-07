@@ -1,7 +1,6 @@
 /*
  * 
  */
-import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -38,7 +37,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 // TODO: Auto-generated Javadoc
 /**
- * The Class InterfazGrafica.
+ * La Clase InterfazGrafica. Clase encarga de toda la parte visual de programa y del manejo de eventos
  */
 public class InterfazGrafica extends JFrame {
 
@@ -107,23 +106,7 @@ public class InterfazGrafica extends JFrame {
 			}
 		}
 
-	/**
-	 * Launch the application.
-	 *
-	 * @param args the arguments
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					InterfazGrafica frame = new InterfazGrafica();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	
 
 	/**
 	 * Create the frame.

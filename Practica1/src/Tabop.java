@@ -10,20 +10,20 @@ import java.util.StringTokenizer;
 
 // TODO: Auto-generated Javadoc
 /**
- * The Class Tabop.
+ * La Clase Tabop. Clase dedicada el manejo del tabop.
  */
 public class Tabop {
 	
-	/** The lista. */
+	/** The lista. lista de codigos de operacion*/
 	ArrayList<CodigosDeOperacion> lista;
 	
-	/** The iterador. */
+	/** The iterador. iterador de la lista*/
 	Iterator<CodigosDeOperacion> iterador;
 	
-	/** The archivo. */
+	/** The archivo. acceso al archivo*/
 	RandomAccessFile archivo;
 	
-	/** The tabop. */
+	/** The tabop. Direccion del tabop*/
 	File tabop;
 	
 	/**
@@ -39,16 +39,16 @@ public class Tabop {
 	}
 	
 	/**
-	 * Abrir archivo.
+	 * Abrir archivo. Abre el archivo Tabop.txt
 	 *
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	void abrirArchivo() throws IOException{
-    	archivo = new RandomAccessFile("Tabop.txt", "r");	   
+    	archivo = new RandomAccessFile("./Tabop.txt", "r");	   
     }// fin del metodo
     
     /**
-     * Leer archivo.
+     * Leer archivo. Lee el archivo tabop y lo carga en memoria RAM
      *
      * @throws IOException Signals that an I/O exception has occurred.
      */
@@ -79,7 +79,7 @@ public class Tabop {
     }
     
     /**
-     * Mostrar tabop.
+     * Mostrar tabop. Muestar todo el Tabop completo en consola
      */
     void mostrarTabop(){
     	CodigosDeOperacion aux;
@@ -93,7 +93,7 @@ public class Tabop {
     }
     
     /**
-     * Busqueda binaria.
+     * Busqueda binaria. Metodo que realiza un busqueda binaria para encontrar el Codigo de Operacion
      *
      * @param codop que se va a buscar
      * @return the codigos de operacion
@@ -104,24 +104,43 @@ public class Tabop {
     	int izq=0,der=lista.size()-1,cen;
     	boolean bandera = false;
     	while (izq <= der && bandera == false){
-    		cen=(int)((izq+der)/2);
+    		cen=(izq+der)/2;
     		aux=lista.get(cen);
-    		if (codop.compareTo(aux.regresarInstruccion())==0){
+    		if (codop.compareToIgnoreCase(aux.regresarInstruccion())==0){
     			return aux;
     		}
     		
-    		else if (codop.compareTo(aux.regresarInstruccion())>0){
-    			izq = cen + 1;
+    		else if (codop.compareToIgnoreCase(aux.regresarInstruccion())>0){
+    			izq = cen+1;
     		}
     		
     		else{
-    			der = cen - 1;
+    			der = cen-1;
     		}
     	}
     	
     
     	return null;
     }
+    
+	CodigosDeOperacion busqueda(String codop){
+	    	
+	    	CodigosDeOperacion aux = null;
+	    	iterador=lista.listIterator();
+	    	
+	    	
+	    	while (iterador.hasNext()){
+	    		aux=iterador.next();
+	    		if(codop.compareToIgnoreCase(aux.regresarInstruccion())==0){
+	    			return aux;
+	    		}
+	    	}
+	    	
+	    
+	    	return null;
+	    }
+    
+    
     
 
 }

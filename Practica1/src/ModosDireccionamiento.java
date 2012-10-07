@@ -2,27 +2,27 @@
 
 // TODO: Auto-generated Javadoc
 /**
- * The Class ModosDireccionamiento.
+ * La Clase ModosDireccionamiento. Clase que almacena un modo de direccionamiento
  */
 public class ModosDireccionamiento {
 	
-	/** The modo direccionamiento. */
+	/** EL modo direccionamiento.*/
 	String modoDireccionamiento;
 	
-	/** The codigo maquina. */
+	/** El codigo maquina. */
 	String codigoMaquina;
 	
-	/** The calculados. */
+	/** Los calculados. */
 	Integer calculados;
 	
-	/** The por calcular. */
+	/** Los por calcular. */
 	Integer porCalcular;
 	
-	/** The suma total. */
+	/** La suma total. */
 	Integer sumaTotal;
 	
 	/**
-	 * Insertar modo.
+	 * Insertar modo. Metodo para asignarle el nombre al modo de direccionamiento
 	 *
 	 * @param modo the modo
 	 */
@@ -31,7 +31,7 @@ public class ModosDireccionamiento {
 	}
 	
 	/**
-	 * Insertar codigo maquina.
+	 * Insertar codigo maquina. Metodo para asignarle el codigo maquina
 	 *
 	 * @param codigoMaquina
 	 */
@@ -40,7 +40,7 @@ public class ModosDireccionamiento {
 	}
 	
 	/**
-	 * Insertar calculados.
+	 * Insertar calculados. Metodo para asignarle los bytes calculados
 	 *
 	 * @param calculados
 	 */
@@ -49,7 +49,7 @@ public class ModosDireccionamiento {
 	}
 	
 	/**
-	 * Insertar por calcular.
+	 * Insertar por calcular.  Metodo para asignarle los bytes que faltan por calcular
 	 *
 	 * @param porCalcular
 	 */
@@ -58,7 +58,7 @@ public class ModosDireccionamiento {
 	}
 	
 	/**
-	 * Insertar suma total.
+	 * Insertar suma total. Metodo para asignarle la suma de bytes
 	 *
 	 * @param sumaTotal
 	 */
@@ -67,7 +67,7 @@ public class ModosDireccionamiento {
 	}
 	
 	/**
-	 * Mostrar modo.
+	 * Mostrar modo. Muestra el modo en consola
 	 */
 	void mostrarModo(){
 		System.out.println(modoDireccionamiento+"   "+codigoMaquina+"   "+calculados+"   "+porCalcular+"   "+sumaTotal);
@@ -75,7 +75,7 @@ public class ModosDireccionamiento {
 	}
 	
 	/**
-	 * Regresar modo.
+	 * Regresar modo. regresa el nombre del modo de direccionamiento 
 	 *
 	 * @return el modo de direccinamiento
 	 */
@@ -84,7 +84,7 @@ public class ModosDireccionamiento {
 	}
 	
 	/**
-	 * Regresar por calcular.
+	 * Regresar por calcular. regresa los bytes que faltan por calcular
 	 *
 	 * @return los bytes por calcular
 	 */
