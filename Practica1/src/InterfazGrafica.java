@@ -294,8 +294,8 @@ public class InterfazGrafica extends JFrame {
 		table_1.getColumnModel().getColumn(2).setMaxWidth(60);
 		table_1.getColumnModel().getColumn(2).setPreferredWidth(60);
 		table_1.getColumnModel().getColumn(3).setHeaderRenderer(r);
-		table_1.getColumnModel().getColumn(3).setMaxWidth(100);
-		table_1.getColumnModel().getColumn(3).setPreferredWidth(100);
+		table_1.getColumnModel().getColumn(3).setMaxWidth(200);
+		table_1.getColumnModel().getColumn(3).setPreferredWidth(200);
 		table_1.getColumnModel().getColumn(4).setHeaderRenderer(r);
 		
 

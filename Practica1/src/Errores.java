@@ -56,7 +56,7 @@ public class Errores {
 		errores [3][2]= new String("ERROR: No se encontro el END");
 		
 		//ERRORES DE MODOS DE DIRECCIONAMIENTO
-		errores [4][0]= new String("ERROR: Formato de operando no válido para ningún modo de direccionamiento");
+		errores [4][0]= new String("ERROR: Formato de operando no válido para ningún modo de direccionamiento valido para este codigo de operacion");
 		errores [4][1]= new String("ERROR: Operando fuera de rango para direccionamiento IMM8");
 		errores [4][2]= new String("ERROR: Operando fuera de rango para direccionamiento IMM16");
 		errores [5][0]= new String("ERROR: Operando fuera de rango para direccionamiento DIR");

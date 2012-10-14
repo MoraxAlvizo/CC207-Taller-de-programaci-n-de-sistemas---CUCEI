@@ -20,7 +20,6 @@ public class Automata {
 		Iterator <ModosDireccionamiento> iterador = listaModos.listIterator();
 		ModosDireccionamiento aux_modo;
 		String modo;
-		Integer error_base=0;
 		
 		ValidarModos.errori = -1;
 		ValidarModos.errorj = -1;
@@ -29,69 +28,62 @@ public class Automata {
 			
 			aux_modo = iterador.next();
 			modo = aux_modo.regresarModo();
-			if(modo.compareTo("IMM8")==0 && (error_base=ValidarModos.isIMM8(cadena))==1){
+			if(modo.compareTo("IMM8")==0 && ValidarModos.isIMM8(cadena)==1){
 				return cadena+"|"+modo;
 			}
-			else if(modo.compareTo("IMM16")==0 && (error_base=ValidarModos.isIMM16(cadena))==1){
+			else if(modo.compareTo("IMM16")==0 && ValidarModos.isIMM16(cadena)==1){
 				return cadena+"|"+modo;
 			}
-			else if(modo.compareTo("DIR")==0 && (error_base=ValidarModos.isDIR(cadena))==1){
+			else if(modo.compareTo("DIR")==0 && ValidarModos.isDIR(cadena)==1){
 				return cadena+"|"+modo;
 			}
-			else if(modo.compareTo("EXT")==0 && (error_base=ValidarModos.isEXT(cadena))==1){
+			else if(modo.compareTo("EXT")==0 && ValidarModos.isEXT(cadena)==1){
 				return cadena+"|"+modo;
 			}
-			else if(modo.compareTo("IDX")==0 && (error_base=ValidarModos.isIDX(cadena))==1){
+			else if(modo.compareTo("IDX")==0 && ValidarModos.isIDX(cadena)==1){
 				return cadena+"|"+modo;
 			}
-			else if(modo.compareTo("IDX1")==0 && (error_base=ValidarModos.isIDX1(cadena))==1){
+			else if(modo.compareTo("IDX1")==0 && ValidarModos.isIDX1(cadena)==1){
 				return cadena+"|"+modo;
 			}
-			else if(modo.compareTo("IDX2")==0 && (error_base=ValidarModos.isIDX2(cadena))==1){
+			else if(modo.compareTo("IDX2")==0 && ValidarModos.isIDX2(cadena)==1){
 				return cadena+"|"+modo;
 			}
-			else if(modo.compareTo("[IDX2]")==0 && (error_base=ValidarModos.isINDIRECTOIDX2(cadena))==1){
+			else if(modo.compareTo("[IDX2]")==0 && ValidarModos.isINDIRECTOIDX2(cadena)==1){
 				return cadena+"|"+modo;
 			}
-			else if(modo.compareTo("[D,IDX]")==0 && (error_base=ValidarModos.isDIDX(cadena))==1){
+			else if(modo.compareTo("[D,IDX]")==0 && ValidarModos.isDIDX(cadena)==1){
 				return cadena+"|"+modo;
 			}
-			else if(modo.compareTo("REL8")==0 && (error_base=ValidarModos.isREL8(cadena))==1){
+			else if(modo.compareTo("REL8")==0 && ValidarModos.isREL8(cadena)==1){
 				return cadena+"|"+modo;
 			}
-			else if(modo.compareTo("REL16")==0 && (error_base=ValidarModos.isREL16(cadena))==1){
+			else if(modo.compareTo("REL16")==0 && ValidarModos.isREL16(cadena)==1){
 				return cadena+"|"+modo;
 			}
 			
 		}
 		
-		if( error_base == -1){
-			err.resultado(8,1, linea);
-			return "error";
-		}
-		
-		else if(ValidarModos.errori != -1 && ValidarModos.errorj != -1){
+		if(ValidarModos.errori != -1 && ValidarModos.errorj != -1){
 			err.resultado(ValidarModos.errori,ValidarModos.errorj, linea);
 			return "error";
 		}
 		
-		
-		
-		return null;
+		else return null;
 	}
 	
-	static String cambiarABaseDecimal(String operando)throws Exception{
+	static Integer cambiarABaseDecimal(String operando)throws Exception{
 		
 		Character base = operando.charAt(0);
 		
 		if(Character.isDigit(base) || base.compareTo('-')==0)
-			return "10"+"|"+Integer.parseInt(operando);
+			return Integer.parseInt(operando);
 		else if(!operando.contains("-")){
 			switch(base){
 			
-			case '%':return "2"+"|"+Integer.parseInt(operando.substring(1), 2);
-			case '@':return "8"+"|"+Integer.parseInt(operando.substring(1), 8);
-			case '$':return "16"+"|"+Integer.parseInt(operando.substring(1), 16);
+			case '%':return Integer.parseInt(operando.substring(1), 2);
+			case '@':return Integer.parseInt(operando.substring(1), 8);
+			case '$':return Integer.parseInt(operando.substring(1), 16);
 		
 			}
 			
@@ -112,8 +104,6 @@ public class Automata {
 			
 			else return false;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 			return false;
 		}
 		

@@ -9,16 +9,11 @@ public class ValidarModos {
 	static Integer isIMM8(String operando){
 		
 		Integer nodecimal;
-		Integer base;
-		String baseydecimal;
 		
 		if(operando.matches("[#][$]?[@]?[%]?[-]?[A-F0-9]+")){
 			
 			try{
-				baseydecimal = Automata.cambiarABaseDecimal(operando.substring(1));
-				StringTokenizer aux = new StringTokenizer(baseydecimal,"|");
-				base = Integer.parseInt(aux.nextToken());
-				nodecimal = Integer.parseInt(aux.nextToken());
+				nodecimal = Automata.cambiarABaseDecimal(operando.substring(1));
 	
 				if (Automata.validarNumero(nodecimal,8,255,-256)){		
 					return 1;
@@ -43,10 +38,7 @@ public class ValidarModos {
 		
 		if(operando.matches("[#][$]?[@]?[%]?[-]?[A-F0-9]+")){
 			try{
-				String baseydecimal = Automata.cambiarABaseDecimal(operando.substring(1));
-				StringTokenizer aux = new StringTokenizer(baseydecimal,"|");
-				Integer base = Integer.parseInt(aux.nextToken());
-				nodecimal = Integer.parseInt(aux.nextToken());
+				nodecimal = Automata.cambiarABaseDecimal(operando.substring(1));
 	
 				if (Automata.validarNumero(nodecimal,16,65535,-32768)){		
 					return 1;
@@ -74,10 +66,7 @@ public class ValidarModos {
 		
 		if(operando.matches("[$]?[@]?[%]?[-]?[A-F0-9]+")){
 			try{
-				String baseydecimal = Automata.cambiarABaseDecimal(operando);
-				StringTokenizer aux = new StringTokenizer(baseydecimal,"|");
-				Integer base = Integer.parseInt(aux.nextToken());
-				nodecimal = Integer.parseInt(aux.nextToken());
+				nodecimal = Automata.cambiarABaseDecimal(operando);
 	
 				if (Automata.validarNumero(nodecimal,8,255,0)){		
 					return 1;
@@ -106,10 +95,7 @@ public class ValidarModos {
 		if(operando.matches("[$]?[@]?[%]?[-]?[A-Za-z0-9]+")){
 			try{
 				
-				String baseydecimal = Automata.cambiarABaseDecimal(operando);
-				StringTokenizer aux = new StringTokenizer(baseydecimal,"|");
-				Integer base = Integer.parseInt(aux.nextToken());
-				nodecimal = Integer.parseInt(aux.nextToken());
+				nodecimal = Automata.cambiarABaseDecimal(operando);
 	
 				if (Automata.validarNumero(nodecimal,16,65535,-32768)){		
 					return 1;
@@ -150,7 +136,7 @@ public class ValidarModos {
 				idx = new StringTokenizer(operando,",");
 				acumulador = idx.nextToken();
 				registro = idx.nextToken();
-				if (Automata.validarRegistro(registro)){
+				if (Automata.validarRegistro(registro) && acumulador != null){
 					return 1;
 				}
 					
@@ -182,13 +168,11 @@ public class ValidarModos {
 				}
 				else{
 					idx = new StringTokenizer(operando,",");
-					String baseydecimal = Automata.cambiarABaseDecimal(idx.nextToken());
+					nodecimal = Automata.cambiarABaseDecimal(idx.nextToken());
 					registro = idx.nextToken();
-					StringTokenizer aux = new StringTokenizer(baseydecimal,"|");
-					Integer base = Integer.parseInt(aux.nextToken());
-					nodecimal = Integer.parseInt(aux.nextToken());
-					boolean banderaN, banderaR;
-					if ((banderaN =Automata.validarNumero(nodecimal,4,15,-16)) &&  (banderaR = Automata.validarRegistro(registro))){		
+					
+					boolean banderaN;
+					if ((banderaN =Automata.validarNumero(nodecimal,4,15,-16)) && Automata.validarRegistro(registro)){		
 						return 1;
 					}
 					else{
@@ -216,13 +200,11 @@ public class ValidarModos {
 		else if(operando.matches("[$]?[@]?[%]?[-]?[A-Z0-9]+[,][+|-][A-Za-z]+")){
 			try{
 				idx = new StringTokenizer(operando,",");
-				String baseydecimal = Automata.cambiarABaseDecimal(idx.nextToken());
+				nodecimal = Automata.cambiarABaseDecimal(idx.nextToken());
 				registro = idx.nextToken();
-				StringTokenizer aux = new StringTokenizer(baseydecimal,"|");
-				Integer base = Integer.parseInt(aux.nextToken());
-				nodecimal = Integer.parseInt(aux.nextToken());
-				boolean banderaN, banderaR;
-				if ((banderaN =Automata.validarNumero(nodecimal,5,8,1)) &&  (banderaR = Automata.validarRegistro(registro.substring(1)))){		
+				
+				boolean banderaN;
+				if ((banderaN =Automata.validarNumero(nodecimal,5,8,1)) &&  Automata.validarRegistro(registro.substring(1))){		
 					return 1;
 				}
 				else{
@@ -239,6 +221,8 @@ public class ValidarModos {
 				}		
 			}
 			catch (Exception e){
+				ValidarModos.errori = 8; 
+				ValidarModos.errorj = 1;
 				return -1;
 			}
 		}// fin del pre
@@ -246,13 +230,11 @@ public class ValidarModos {
 		else if(operando.matches("[$]?[@]?[%]?[-]?[A-Z0-9]+[,][A-Za-z]+[+|-]")){
 			try{
 				idx = new StringTokenizer(operando,",");
-				String baseydecimal = Automata.cambiarABaseDecimal(idx.nextToken());
+				nodecimal = Automata.cambiarABaseDecimal(idx.nextToken());
 				registro = idx.nextToken();
-				StringTokenizer aux = new StringTokenizer(baseydecimal,"|");
-				Integer base = Integer.parseInt(aux.nextToken());
-				nodecimal = Integer.parseInt(aux.nextToken());
-				boolean banderaN, banderaR;
-				if ((banderaN =Automata.validarNumero(nodecimal,4,8,1)) &&  (banderaR = Automata.validarRegistro(registro.substring(0,registro.length()-1)))){		
+				
+				boolean banderaN;
+				if ((banderaN =Automata.validarNumero(nodecimal,4,8,1)) &&  Automata.validarRegistro(registro.substring(0,registro.length()-1))){		
 					return 1;
 				}
 				else{
@@ -270,6 +252,8 @@ public class ValidarModos {
 						
 			}
 			catch (Exception e){
+				ValidarModos.errori = 8; 
+				ValidarModos.errorj = 1;
 				return -1;
 			}
 		}// fin del post
@@ -288,13 +272,11 @@ public class ValidarModos {
 		if(operando.matches("[$]?[@]?[%]?[-]?[A-Za-z0-9]+[,][A-Za-z]+")){
 			try{
 				idx = new StringTokenizer(operando,",");
-				String baseydecimal = Automata.cambiarABaseDecimal(idx.nextToken());
+				nodecimal = Automata.cambiarABaseDecimal(idx.nextToken());
 				registro = idx.nextToken();
-				StringTokenizer aux = new StringTokenizer(baseydecimal,"|");
-				Integer base = Integer.parseInt(aux.nextToken());
-				nodecimal = Integer.parseInt(aux.nextToken());
-				boolean banderaN, banderaR;
-				if ((banderaN =Automata.validarNumero(nodecimal,8,255,-256)) &&  (banderaR = Automata.validarRegistro(registro))){		
+				
+				boolean banderaN;
+				if ((banderaN =Automata.validarNumero(nodecimal,8,255,-256)) &&  Automata.validarRegistro(registro)){		
 					return 1;
 				}
 				else{
@@ -312,6 +294,8 @@ public class ValidarModos {
 						
 			}
 			catch (Exception e){
+				ValidarModos.errori = 8; 
+				ValidarModos.errorj = 1;
 				return -1;
 			}
 		}
@@ -328,13 +312,11 @@ public class ValidarModos {
 		if(operando.matches("[$]?[@]?[%]?[-]?[A-Za-z0-9]+[,][A-Za-z]+")){
 			try{
 				idx = new StringTokenizer(operando,",");
-				String baseydecimal = Automata.cambiarABaseDecimal(idx.nextToken());
+				nodecimal = Automata.cambiarABaseDecimal(idx.nextToken());
 				registro = idx.nextToken();
-				StringTokenizer aux = new StringTokenizer(baseydecimal,"|");
-				Integer base = Integer.parseInt(aux.nextToken());
-				nodecimal = Integer.parseInt(aux.nextToken());
-				boolean banderaN, banderaR;
-				if ((banderaN =Automata.validarNumero(nodecimal,16,65535,0)) &&  (banderaR = Automata.validarRegistro(registro))){		
+				boolean banderaN;
+				
+				if ((banderaN =Automata.validarNumero(nodecimal,16,65535,0)) &&  Automata.validarRegistro(registro)){		
 					return 1;
 				}
 				else{
@@ -352,6 +334,8 @@ public class ValidarModos {
 						
 			}
 			catch (Exception e){
+				ValidarModos.errori = 8; 
+				ValidarModos.errorj = 1;
 				return -1;
 			}
 		}
@@ -371,13 +355,11 @@ public class ValidarModos {
 				try{
 					
 					idx = new StringTokenizer(operando,",");
-					String baseydecimal = Automata.cambiarABaseDecimal(idx.nextToken());
+					nodecimal = Automata.cambiarABaseDecimal(idx.nextToken());
 					registro = idx.nextToken();
-					StringTokenizer aux = new StringTokenizer(baseydecimal,"|");
-					Integer base = Integer.parseInt(aux.nextToken());
-					nodecimal = Integer.parseInt(aux.nextToken());
-					boolean banderaN, banderaR;
-					if ((banderaN =Automata.validarNumero(nodecimal,16,65535,0)) &&  (banderaR = Automata.validarRegistro(registro))){		
+					boolean banderaN;
+					
+					if ((banderaN =Automata.validarNumero(nodecimal,16,65535,0)) &&  Automata.validarRegistro(registro)){		
 						return 1;
 					}
 					else{
@@ -395,6 +377,8 @@ public class ValidarModos {
 							
 				}
 				catch (Exception e){
+					ValidarModos.errori = 8; 
+					ValidarModos.errorj = 1;
 					return -1;
 				}
 			}
@@ -417,7 +401,7 @@ public class ValidarModos {
 					idx = new StringTokenizer(operando,",");
 					acumulador = idx.nextToken();
 					registro = idx.nextToken();
-					if (Automata.validarRegistro(registro)){
+					if (Automata.validarRegistro(registro) && acumulador.compareTo("D")==0){
 						return 1;
 					}
 						
@@ -429,6 +413,8 @@ public class ValidarModos {
 							
 				}
 				catch (Exception e){
+					ValidarModos.errori = 8; 
+					ValidarModos.errorj = 1;
 					return -1;
 				}
 			}
@@ -441,70 +427,74 @@ public class ValidarModos {
 	static Integer isREL8(String operando){
 		
 		
-		/*
 		Integer nodecimal;
-		if(operando.matches("[$]?[@]?[%]?[-]?[A-Za-z0-9]+")){
-			try{
-				nodecimal = Automata.cambiarABaseDecimal(operando);	
-				if (nodecimal != null && nodecimal >= -128 && nodecimal <= 127){
-					return 1;
-				}
-				
-				else if(nodecimal != null && (nodecimal=Automata.complementoA2(nodecimal,null))>= -128 && nodecimal < 0 ){
-					return 1;
-				}
-				
-				else if(Automata.analizarEtiquetaEnOperando(operando)!=null){
-					return 1;
-				}
-				
-				else return 0;
-				
-			}
-			catch (Exception e){
-				return -1;
-			}
-		}
-		*/
+		String etiqueta;
 		
-		if (ValidarModos.isDIR(operando) == 1)return 1;
-		else if (Automata.analizarEtiquetaEnOperando(operando) != null) return 1;
-		else return 0;
-	}
+		if(operando.matches("[$]?[@]?[%]?[-]?[A-F0-9]+")){
+			try{
+				nodecimal = Automata.cambiarABaseDecimal(operando);
 	
-	static Integer isREL16(String operando){
-		/*
-		Integer nodecimal;
-		
-		if(operando.matches("[$]?[@]?[%]?[-]?[A-Za-z0-9]+")){
-			try{
-				nodecimal = Automata.cambiarABaseDecimal(operando);	
-				if (nodecimal != null && nodecimal >= -32768 && nodecimal <= 65535){
+				if (Automata.validarNumero(nodecimal,8,255,0)){		
 					return 1;
 				}
-				
-				else if(nodecimal != null && (nodecimal=Automata.complementoA2(nodecimal,null))>= -32768 && nodecimal < 0 ){
-					return 1;
-				}
-				
-				else if(Automata.analizarEtiquetaEnOperando(operando)!=null){
-					return 1;
-				}
-				
 				else{
-					ValidarModos.errori = 8; 
-					ValidarModos.errorj = 1;
+					ValidarModos.errori = 7; 
+					ValidarModos.errorj = 1; 
+					
 					return 0;
 				}
 				
 			}
 			catch (Exception e){
-				return -1;
+				if((etiqueta = Automata.analizarEtiquetaEnOperando(operando)) != null){
+					return 1;
+				}
+				
+				if (etiqueta == null){
+					ValidarModos.errori = 8; 
+					ValidarModos.errorj = 2; 
+				}
+				
+				return 0;
 			}
-		}*/
-		if(ValidarModos.isEXT(operando)==1)return 1;
-		else if (Automata.analizarEtiquetaEnOperando(operando) != null) return 1;
-		else return 0;
+		}
+		
+		return 0;
+	}
+	
+	static Integer isREL16(String operando){
+		Integer nodecimal;
+		String etiqueta;
+		
+		if(operando.matches("[$]?[@]?[%]?[-]?[A-Za-z0-9]+")){
+			try{			
+				nodecimal = Automata.cambiarABaseDecimal(operando);
+
+				if (Automata.validarNumero(nodecimal,16,65535,-32768)){		
+					return 1;
+				}
+				else{
+					ValidarModos.errori = 7; 
+					ValidarModos.errorj = 2; 
+					
+					return 0;
+				}
+				
+			}
+			catch (Exception e){
+				if((etiqueta = Automata.analizarEtiquetaEnOperando(operando)) != null){
+					return 1;
+				}
+				
+				if (etiqueta == null){
+					ValidarModos.errori = 8; 
+					ValidarModos.errorj = 2; 
+				}
+				
+				return 0;
+			}
+		}
+		return 0;
 	}
 	
 	

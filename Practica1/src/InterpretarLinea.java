@@ -82,7 +82,7 @@ public class InterpretarLinea {
 			direccion = direccion.replace(".asm", ".inst");
 	        fw = new FileWriter(direccion, false);
 	        pw = new PrintWriter(fw);
-	        pw.println(String.format("%-8s  %-10s  %-10s  %-10s %s","LINEA","ETIQUETA","CODOP","OPERANDO","MODO"));
+	        pw.println(String.format("%-8s  %-10s  %-10s  %-20s %s","LINEA","ETIQUETA","CODOP","OPERANDO","MODO"));
 	        pw.println(".......................................................................................");
 	    } catch (IOException e) {
 	        e.printStackTrace();
@@ -276,7 +276,7 @@ public class InterpretarLinea {
 			fila[3]=operando;
 			fila[4]=modo;
 			ints.addRow(fila);
-			pw.println(String.format("%-8s  %-10s  %-10s  %-10s %s",contador,etiqueta,codop,operando,modo));
+			pw.println(String.format("%-8s  %-10s  %-10s  %-20s %s",contador,etiqueta,codop,operando,modo));
 		
 	}
 	
