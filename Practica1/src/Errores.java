@@ -70,6 +70,7 @@ public class Errores {
 		errores [7][2]= new String("ERROR: Operando fuera de rango para direccionamiento REL16");
 		errores [8][0]= new String("ERROR: Registro no encontrado");
 		errores [8][1]= new String("ERROR: error en el formato del numero");
+		errores [8][2]= new String("ERROR: error en el formato de etiqueta en el operando");
 		
 			 
 	}

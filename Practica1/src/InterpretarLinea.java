@@ -210,7 +210,7 @@ public class InterpretarLinea {
 					break;
 			case 1:codigooperacion = Automata.analizar(token,modo,tabop,err,contador);
 					if (codigooperacion == null){
-						if(token.compareTo("ORG") == 0 || token.compareTo("END") == 0){
+						if(token.compareToIgnoreCase("ORG") == 0 || token.compareToIgnoreCase("END") == 0){
 							codop = token;
 							break;
 						}

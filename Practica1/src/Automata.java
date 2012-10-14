@@ -65,36 +65,93 @@ public class Automata {
 			
 		}
 		
-		if(ValidarModos.errori != -1 && ValidarModos.errorj != -1){
-			err.resultado(ValidarModos.errori,ValidarModos.errorj, linea);
-			return "error";
-		}
-		
-		else if( error_base == -1){
+		if( error_base == -1){
 			err.resultado(8,1, linea);
 			return "error";
 		}
 		
+		else if(ValidarModos.errori != -1 && ValidarModos.errorj != -1){
+			err.resultado(ValidarModos.errori,ValidarModos.errorj, linea);
+			return "error";
+		}
+		
+		
+		
 		return null;
 	}
 	
-	static Integer cambiarABaseDecimal(String operando)throws Exception{
+	static String cambiarABaseDecimal(String operando)throws Exception{
 		
 		Character base = operando.charAt(0);
 		
-		if(Character.isDigit(base) || base.compareTo('-')==0 || base.compareTo('+')==0 )
-			return Integer.parseInt(operando);
-		else 
+		if(Character.isDigit(base) || base.compareTo('-')==0)
+			return "10"+"|"+Integer.parseInt(operando);
+		else if(!operando.contains("-")){
 			switch(base){
 			
-			case '%':return Integer.parseInt(operando.substring(1), 2);
-			case '@':return Integer.parseInt(operando.substring(1), 8);
-			case '$':return Integer.parseInt(operando.substring(1), 16);
-			
-			}
+			case '%':return "2"+"|"+Integer.parseInt(operando.substring(1), 2);
+			case '@':return "8"+"|"+Integer.parseInt(operando.substring(1), 8);
+			case '$':return "16"+"|"+Integer.parseInt(operando.substring(1), 16);
 		
-		return null;
+			}
+			
+			return null;
+		}	
+		else return null;
 	}
+	
+	static Boolean validarNumero(Integer operando,Integer base,Integer rango_positivo, Integer rango_negativo){
+		Integer num;
+		try {
+			num = Automata.complementoA2(operando, base);
+			
+			if (num >= rango_negativo && num <= rango_positivo ){
+				System.out.println(num);
+				return true;
+			}
+			
+			else return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		
+		
+	}
+	
+	static Integer complementoA2(Integer decimal, Integer base){
+		
+		String complemento= Integer.toBinaryString(decimal);
+		int bitesnecesarios;
+		
+		if(complemento.length()>base+1){
+			return null;
+		}
+		
+		for (int i = base - complemento.length() + 1; i > 0 ;i--){
+			complemento = "0" + complemento;
+			
+		}
+		
+		if(complemento.charAt(0)=='1'){
+			
+			complemento = complemento.substring(1);
+			bitesnecesarios = complemento.length();
+			decimal = Integer.parseInt(complemento,2);
+			System.out.println(decimal);
+			decimal = ~decimal +1;
+			complemento = Integer.toBinaryString(decimal);
+			complemento = complemento.substring(complemento.length() - bitesnecesarios);
+			decimal = Integer.parseInt(complemento,2);
+			decimal = -decimal;
+		}
+		
+		return decimal;
+		
+		
+	}
+	
 	
 	static boolean validarRegistro(String registro){
 		if ( registro.compareToIgnoreCase("X")  == 0) return true;
@@ -170,7 +227,7 @@ public class Automata {
 					return aux;
 				}
 				
-				else if(cadena.compareTo("ORG") == 0 || cadena.compareTo("END") == 0 ){
+				else if(cadena.compareToIgnoreCase("ORG") == 0 || cadena.compareToIgnoreCase("END") == 0 ){
 					return null;
 				}
 				
@@ -191,6 +248,7 @@ public class Automata {
 		}
 		
 	}
+	
 
 	
 }
