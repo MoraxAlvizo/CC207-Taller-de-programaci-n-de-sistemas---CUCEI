@@ -15,13 +15,18 @@ public class ValidarModos {
 			try{
 				nodecimal = Automata.cambiarABaseDecimal(operando.substring(1));
 	
-				if (Automata.validarNumero(nodecimal,8,255,-256)){		
+				if (nodecimal != null && Automata.validarNumero(nodecimal,8,255,-256)){		
 					return 1;
 				}
 				else{
-					ValidarModos.errori = 4; 
-					ValidarModos.errorj = 1; 
-					
+					if(nodecimal == null){
+						ValidarModos.errori = 8; 
+						ValidarModos.errorj = 1; 
+					}
+					else{
+						ValidarModos.errori = 4; 
+						ValidarModos.errorj = 1; 
+					}
 					return 0;
 				}
 			}catch (Exception e){
@@ -44,9 +49,14 @@ public class ValidarModos {
 					return 1;
 				}
 				else{
-					ValidarModos.errori = 4; 
-					ValidarModos.errorj = 2; 
-					
+					if(nodecimal == null){
+						ValidarModos.errori = 8; 
+						ValidarModos.errorj = 1; 
+					}
+					else{
+						ValidarModos.errori = 4; 
+						ValidarModos.errorj = 2;
+					}
 					return 0;
 				}
 				
@@ -72,8 +82,14 @@ public class ValidarModos {
 					return 1;
 				}
 				else{
-					ValidarModos.errori = 5; 
-					ValidarModos.errorj = 0; 
+					if(nodecimal == null){
+						ValidarModos.errori = 8; 
+						ValidarModos.errorj = 1; 
+					}
+					else{
+						ValidarModos.errori = 5; 
+						ValidarModos.errorj = 0; 	
+					}
 					
 					return 0;
 				}
@@ -90,7 +106,6 @@ public class ValidarModos {
 	static Integer isEXT(String operando){
 		
 		Integer nodecimal;
-		String etiqueta;
 		
 		if(operando.matches("[$]?[@]?[%]?[-]?[A-Za-z0-9]+")){
 			try{
@@ -101,23 +116,27 @@ public class ValidarModos {
 					return 1;
 				}
 				else{
-					ValidarModos.errori = 5; 
-					ValidarModos.errorj = 1; 
+					
+					if(nodecimal == null){
+						if(Automata.analizarEtiquetaEnOperando(operando) != null){
+							return 1;
+						}
+						else{
+							ValidarModos.errori = 2; 
+							ValidarModos.errorj = 2; 
+						}
+						
+					}
+					else{
+						ValidarModos.errori = 5; 
+						ValidarModos.errorj = 1; 
+					}
 					
 					return 0;
 				}
 				
 			}
-			catch (Exception e){
-				if((etiqueta = Automata.analizarEtiquetaEnOperando(operando)) != null){
-					return 1;
-				}
-				
-				if (etiqueta == null){
-					ValidarModos.errori = 8; 
-					ValidarModos.errorj = 2; 
-				}
-				
+			catch (Exception e){				
 				return 0;
 			}
 		}
@@ -177,9 +196,16 @@ public class ValidarModos {
 					}
 					else{
 						if(!banderaN){
-							ValidarModos.errori = 5; 
-							ValidarModos.errorj = 2; 
+							if(nodecimal == null){
+								ValidarModos.errori = 8; 
+								ValidarModos.errorj = 1; 
+							}
+							else{
+								ValidarModos.errori = 5; 
+								ValidarModos.errorj = 2;
+							} 
 						}
+						
 						else{
 							ValidarModos.errori = 8; 
 							ValidarModos.errorj = 0;
@@ -209,8 +235,15 @@ public class ValidarModos {
 				}
 				else{
 					if(!banderaN){
-						ValidarModos.errori = 5; 
-						ValidarModos.errorj = 2; 
+						if(nodecimal == null){
+							ValidarModos.errori = 8; 
+							ValidarModos.errorj = 1; 
+						}
+						else{
+							ValidarModos.errori = 5; 
+							ValidarModos.errorj = 2; 
+						}
+						
 					}
 					else{
 						ValidarModos.errori = 8; 
@@ -239,8 +272,15 @@ public class ValidarModos {
 				}
 				else{
 					if(!banderaN){
-						ValidarModos.errori = 5; 
-						ValidarModos.errorj = 2; 
+						if(nodecimal == null){
+							ValidarModos.errori = 8; 
+							ValidarModos.errorj = 1; 
+						}
+						else{
+							ValidarModos.errori = 5; 
+							ValidarModos.errorj = 2;
+						}
+						 
 					}
 					else{
 						ValidarModos.errori = 8; 
@@ -281,8 +321,15 @@ public class ValidarModos {
 				}
 				else{
 					if(!banderaN){
-						ValidarModos.errori = 6; 
-						ValidarModos.errorj = 0; 
+						if(nodecimal == null){
+							ValidarModos.errori = 8; 
+							ValidarModos.errorj = 1; 
+						}
+						else{
+							ValidarModos.errori = 6; 
+							ValidarModos.errorj = 0;
+						}
+						 
 					}
 					else{
 						ValidarModos.errori = 8; 
@@ -321,8 +368,14 @@ public class ValidarModos {
 				}
 				else{
 					if(!banderaN){
-						ValidarModos.errori = 6; 
-						ValidarModos.errorj = 1; 
+						if(nodecimal == null){
+							ValidarModos.errori = 8; 
+							ValidarModos.errorj = 1; 
+						}
+						else{
+							ValidarModos.errori = 6; 
+							ValidarModos.errorj = 1;
+						}	 
 					}
 					else{
 						ValidarModos.errori = 8; 
@@ -364,8 +417,15 @@ public class ValidarModos {
 					}
 					else{
 						if(!banderaN){
-							ValidarModos.errori = 6; 
-							ValidarModos.errorj = 2; 
+							if(nodecimal == null){
+								ValidarModos.errori = 8; 
+								ValidarModos.errorj = 1; 
+							}
+							else{
+								ValidarModos.errori = 6; 
+								ValidarModos.errorj = 2;
+							}
+							 
 						}
 						else{
 							ValidarModos.errori = 8; 
@@ -428,7 +488,6 @@ public class ValidarModos {
 		
 		
 		Integer nodecimal;
-		String etiqueta;
 		
 		if(operando.matches("[$]?[@]?[%]?[-]?[A-F0-9]+")){
 			try{
@@ -438,23 +497,25 @@ public class ValidarModos {
 					return 1;
 				}
 				else{
-					ValidarModos.errori = 7; 
-					ValidarModos.errorj = 1; 
+					if(nodecimal == null){
+						if( Automata.analizarEtiquetaEnOperando(operando) != null){
+							return 1;
+						}
+						else{
+							ValidarModos.errori = 2; 
+							ValidarModos.errorj = 2; 
+						}
+					}
+					else{
+						ValidarModos.errori = 7; 
+						ValidarModos.errorj = 1; 
+					}
 					
 					return 0;
 				}
 				
 			}
 			catch (Exception e){
-				if((etiqueta = Automata.analizarEtiquetaEnOperando(operando)) != null){
-					return 1;
-				}
-				
-				if (etiqueta == null){
-					ValidarModos.errori = 8; 
-					ValidarModos.errorj = 2; 
-				}
-				
 				return 0;
 			}
 		}
@@ -464,7 +525,6 @@ public class ValidarModos {
 	
 	static Integer isREL16(String operando){
 		Integer nodecimal;
-		String etiqueta;
 		
 		if(operando.matches("[$]?[@]?[%]?[-]?[A-Za-z0-9]+")){
 			try{			
@@ -474,23 +534,26 @@ public class ValidarModos {
 					return 1;
 				}
 				else{
-					ValidarModos.errori = 7; 
-					ValidarModos.errorj = 2; 
+					if(nodecimal == null){
+						if(Automata.analizarEtiquetaEnOperando(operando) != null){
+							return 1;
+						}
+						else{
+							ValidarModos.errori = 2; 
+							ValidarModos.errorj = 2; 
+						}
+					}
+					else{
+						ValidarModos.errori = 7; 
+						ValidarModos.errorj = 2; 
+					}
+					
 					
 					return 0;
 				}
 				
 			}
 			catch (Exception e){
-				if((etiqueta = Automata.analizarEtiquetaEnOperando(operando)) != null){
-					return 1;
-				}
-				
-				if (etiqueta == null){
-					ValidarModos.errori = 8; 
-					ValidarModos.errorj = 2; 
-				}
-				
 				return 0;
 			}
 		}

@@ -49,6 +49,7 @@ public class Errores {
 		//ERRORES DE OPERANDO
 		errores [2][0]= new String("ERROR: No debe llevar operando");
 		errores [2][1]= new String("ERROR: Debe llevar operando");
+		errores [2][2]= new String("ERROR: error en el formato de etiqueta en el operando o error en el formato del numero");
 		
 		//ERRORES DE LINEA
 		errores [3][0]= new String("ERROR: exceso de tokens en la linea");
