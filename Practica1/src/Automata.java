@@ -81,9 +81,40 @@ public class Automata {
 		else if(!operando.contains("-")){
 			switch(base){
 			
-			case '%':return Integer.parseInt(operando.substring(1), 2);
-			case '@':return Integer.parseInt(operando.substring(1), 8);
-			case '$':return Integer.parseInt(operando.substring(1), 16);
+			case '%': 
+				if(operando.charAt(1)=='1'){
+					operando = operando.substring(1);
+					while(operando.length() > 17){
+						if(operando.charAt(0)=='0')return 65536;
+						else if (operando.charAt(0)=='1')operando = operando.substring(1);
+						else return null;
+					}
+					return Automata.complementoA2(Integer.parseInt(operando,2));
+				}
+					
+				else return Integer.parseInt(operando.substring(1), 2);
+			
+			case '@':
+				if(operando.charAt(1)=='7'){
+					operando = operando.substring(1);
+					while(operando.length() > 6){
+						if(operando.charAt(0)!='7')return 65536;
+						else operando = operando.substring(1);
+
+					}
+					return Automata.complementoA2(Integer.parseInt(operando,8));
+				}
+				else return Integer.parseInt(operando.substring(1), 8);
+			case '$':
+				if(operando.charAt(1)=='F'){
+					operando = operando.substring(1);
+					while(operando.length() > 5){
+						if(operando.charAt(0)!='F')return 65536;
+						else operando = operando.substring(1);
+					}
+					return Automata.complementoA2(Integer.parseInt(operando,16));
+				}
+				else return Integer.parseInt(operando.substring(1), 16);
 		
 			}
 			
@@ -93,12 +124,8 @@ public class Automata {
 	}
 	
 	static Boolean validarNumero(Integer operando,Integer base,Integer rango_positivo, Integer rango_negativo){
-		Integer num;
 		try {
-			num = Automata.complementoA2(operando, base);
-			
-			if (num >= rango_negativo && num <= rango_positivo ){
-				System.out.println(num);
+			if (operando >= rango_negativo && operando <= rango_positivo ){
 				return true;
 			}
 			
@@ -110,32 +137,20 @@ public class Automata {
 		
 	}
 	
-	static Integer complementoA2(Integer decimal, Integer base){
+	static Integer complementoA2(Integer decimal){
 		
 		String complemento= Integer.toBinaryString(decimal);
-		int bitesnecesarios;
-		
-		if(complemento.length()>base+1){
-			return null;
-		}
-		
-		for (int i = base - complemento.length() + 1; i > 0 ;i--){
-			complemento = "0" + complemento;
+		Integer bitesnecesarios;
 			
-		}
+		complemento = complemento.substring(1);
+		bitesnecesarios = complemento.length();
+		decimal = Integer.parseInt(complemento,2);
+		decimal = ~decimal +1;
+		complemento = Integer.toBinaryString(decimal);
+		complemento = complemento.substring(complemento.length() - bitesnecesarios);
+		decimal = Integer.parseInt(complemento,2);
+		decimal = -decimal;
 		
-		if(complemento.charAt(0)=='1'){
-			
-			complemento = complemento.substring(1);
-			bitesnecesarios = complemento.length();
-			decimal = Integer.parseInt(complemento,2);
-			System.out.println(decimal);
-			decimal = ~decimal +1;
-			complemento = Integer.toBinaryString(decimal);
-			complemento = complemento.substring(complemento.length() - bitesnecesarios);
-			decimal = Integer.parseInt(complemento,2);
-			decimal = -decimal;
-		}
 		
 		return decimal;
 		
@@ -151,6 +166,13 @@ public class Automata {
 		else return false;
 	}
 
+	
+	static boolean validarRegistroPrePost(String registro){
+		if ( registro.compareToIgnoreCase("X")  == 0) return true;
+		else if ( registro.compareToIgnoreCase("Y")  == 0) return true;
+		else if ( registro.compareToIgnoreCase("SP")  == 0) return true;
+		else return false;
+	}
 	
 	/**
 	 * Analizar. analiza que la una etiqueta sea valida

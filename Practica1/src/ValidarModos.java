@@ -230,7 +230,7 @@ public class ValidarModos {
 				registro = idx.nextToken();
 				
 				boolean banderaN;
-				if ((banderaN =Automata.validarNumero(nodecimal,5,8,1)) &&  Automata.validarRegistro(registro.substring(1))){		
+				if ((banderaN =Automata.validarNumero(nodecimal,5,8,1)) &&  Automata.validarRegistroPrePost(registro.substring(1))){		
 					return 1;
 				}
 				else{
@@ -267,7 +267,7 @@ public class ValidarModos {
 				registro = idx.nextToken();
 				
 				boolean banderaN;
-				if ((banderaN =Automata.validarNumero(nodecimal,4,8,1)) &&  Automata.validarRegistro(registro.substring(0,registro.length()-1))){		
+				if ((banderaN =Automata.validarNumero(nodecimal,4,8,1)) &&  Automata.validarRegistroPrePost(registro.substring(0,registro.length()-1))){		
 					return 1;
 				}
 				else{
@@ -363,7 +363,7 @@ public class ValidarModos {
 				registro = idx.nextToken();
 				boolean banderaN;
 				
-				if ((banderaN =Automata.validarNumero(nodecimal,16,65535,0)) &&  Automata.validarRegistro(registro)){		
+				if ((banderaN =Automata.validarNumero(nodecimal,16,65535,-32768)) &&  Automata.validarRegistro(registro)){		
 					return 1;
 				}
 				else{
@@ -412,7 +412,7 @@ public class ValidarModos {
 					registro = idx.nextToken();
 					boolean banderaN;
 					
-					if ((banderaN =Automata.validarNumero(nodecimal,16,65535,0)) &&  Automata.validarRegistro(registro)){		
+					if ((banderaN =Automata.validarNumero(nodecimal,16,65535,-32768)) &&  Automata.validarRegistro(registro)){		
 						return 1;
 					}
 					else{
