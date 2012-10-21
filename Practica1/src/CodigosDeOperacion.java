@@ -77,20 +77,14 @@ public class CodigosDeOperacion {
 	 *
 	 * @return todos los modos de direccionamiento separados por ','
 	 */
-	String regresarModos(){
-		ModosDireccionamiento aux;
-		String modos="";
+	ModosDireccionamiento regresarModos(){
 		
 		iterador = lista.listIterator();
-    	while(iterador.hasNext()){
-    		aux= iterador.next();
-    		modos = modos + aux.regresarModo();
-    		if(iterador.hasNext()){
-    			modos = modos + ", ";
-    		}
+    	if(iterador.hasNext()){
+    		return iterador.next();
     	}
     	
-    	return modos;
+    	else return null;
 	}
 	
 	/**

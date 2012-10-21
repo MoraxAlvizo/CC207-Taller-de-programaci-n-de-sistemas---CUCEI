@@ -15,7 +15,7 @@ public class Automata {
 	 * @param cadena a analizar
 	 * @return the string si la cadena es un operando
 	 */
-	static String analizar(String cadena, Errores err, CodigosDeOperacion codop, int linea){
+	static ModosDireccionamiento analizar(String cadena, Errores err, CodigosDeOperacion codop, int linea){
 		ArrayList <ModosDireccionamiento> listaModos = codop.regresarListaModos();
 		Iterator <ModosDireccionamiento> iterador = listaModos.listIterator();
 		ModosDireccionamiento aux_modo;
@@ -29,47 +29,129 @@ public class Automata {
 			aux_modo = iterador.next();
 			modo = aux_modo.regresarModo();
 			if(modo.compareTo("IMM8")==0 && ValidarModos.isIMM8(cadena)==1){
-				return cadena+"|"+modo;
+				return aux_modo;
 			}
 			else if(modo.compareTo("IMM16")==0 && ValidarModos.isIMM16(cadena)==1){
-				return cadena+"|"+modo;
+				return aux_modo;
 			}
 			else if(modo.compareTo("DIR")==0 && ValidarModos.isDIR(cadena)==1){
-				return cadena+"|"+modo;
+				return aux_modo;
 			}
 			else if(modo.compareTo("EXT")==0 && ValidarModos.isEXT(cadena)==1){
-				return cadena+"|"+modo;
+				return aux_modo;
 			}
 			else if(modo.compareTo("IDX")==0 && ValidarModos.isIDX(cadena)==1){
-				return cadena+"|"+modo;
+				return aux_modo;
 			}
 			else if(modo.compareTo("IDX1")==0 && ValidarModos.isIDX1(cadena)==1){
-				return cadena+"|"+modo;
+				return aux_modo;
 			}
 			else if(modo.compareTo("IDX2")==0 && ValidarModos.isIDX2(cadena)==1){
-				return cadena+"|"+modo;
+				return aux_modo;
 			}
 			else if(modo.compareTo("[IDX2]")==0 && ValidarModos.isINDIRECTOIDX2(cadena)==1){
-				return cadena+"|"+modo;
+				return aux_modo;
 			}
 			else if(modo.compareTo("[D,IDX]")==0 && ValidarModos.isDIDX(cadena)==1){
-				return cadena+"|"+modo;
+				return aux_modo;
 			}
 			else if(modo.compareTo("REL8")==0 && ValidarModos.isREL8(cadena)==1){
-				return cadena+"|"+modo;
+				return aux_modo;
 			}
 			else if(modo.compareTo("REL16")==0 && ValidarModos.isREL16(cadena)==1){
-				return cadena+"|"+modo;
+				return aux_modo;
 			}
 			
 		}
 		
 		if(ValidarModos.errori != -1 && ValidarModos.errorj != -1){
 			err.resultado(ValidarModos.errori,ValidarModos.errorj, linea);
-			return "error";
+			return new ModosDireccionamiento("error");
 		}
 		
 		else return null;
+	}
+	
+	static ArrayList<String> separarTokens(String linea){
+		ArrayList <String> listaTokens = new ArrayList<String>();
+		String aux = "";
+		int estado = 0;
+		int [][] automata = {//  E	C  "
+							   { 0, 1, 2},	//0
+							   { 0, 1, 1},	//1
+							   { 2, 2, 0},};//2
+		
+		for(char c:linea.toCharArray()){
+			switch(c){
+			case ' ':case'\t':
+				if(estado == 1){
+					listaTokens.add(aux);
+					aux = "";
+				}
+				else if(estado ==2){
+					aux +=c;
+				}
+				estado = automata[estado][0];
+				break;
+			case'\"':
+				if(estado == 2){
+					listaTokens.add(aux+c);
+					aux = "";
+					estado = automata[estado][2];
+				}
+				else{
+					estado = automata[estado][2];
+					aux +=c;
+				}	
+				break;
+			default:		 
+				estado = automata[estado][1];
+				aux +=c;
+			}
+		}
+		if(!aux.isEmpty()){
+			listaTokens.add(aux);
+		}
+		
+		return listaTokens;
+		
+	}
+	
+	static String analizar(String cadena, Errores err, Directivas d, int linea,ContadorDeLocalidades c){
+		
+		boolean bandera;
+		
+		switch(d.regresarDirectiva()){
+		case 3:				    
+			bandera = d.validarORG(cadena,err,linea,c);
+			if(bandera)c.banderaOrg(d.regresarDirectiva());
+			break;
+		case 9:case 17:case 13: 
+			bandera = d.validarDirectivasConstantes1Byte(cadena,err,linea,c);
+			break;
+		case 8:case 12:case 27: 
+			bandera = d.validarDirectivasConstantes2Byte(cadena,err,linea,c);
+			break;
+		case 16:			    
+			bandera = d.validarFCC(cadena,err,linea,c);					   
+			break;
+		case 19:case 21:case 25:
+			bandera = d.validarDirectivasEspacio1Byte(cadena,err,linea,c);   
+			break;
+		case 22:case 26:		
+			bandera = d.validarDirectivasEspacio2Byte(cadena,err,linea,c);   
+			break;
+		default: bandera = false;
+		}
+
+		if(bandera){
+			c.banderaEQU(d.regresarDirectiva());
+			return cadena;
+		}
+		else{
+			return null;
+		}
+		
 	}
 	
 	static Integer cambiarABaseDecimal(String operando)throws Exception{
@@ -149,9 +231,7 @@ public class Automata {
 		complemento = Integer.toBinaryString(decimal);
 		complemento = complemento.substring(complemento.length() - bitesnecesarios);
 		decimal = Integer.parseInt(complemento,2);
-		decimal = -decimal;
-		
-		
+		decimal = -decimal;	
 		return decimal;
 		
 		
@@ -183,11 +263,15 @@ public class Automata {
 	 * @param linea numero de linea 
 	 * @return cadena if es una Etiqueta else NULL
 	 */
-	static String analizar(String cadena,Errores err, int linea){
+	static String analizar(String cadena,Errores err, int linea, TablaSimbolos t){
 		
 		if(cadena.matches("[A-Za-z]+([0-9]*[A-Za-z]*[_]*)*")){
 			if(cadena.length()<9)
-				return cadena;
+				if(t.validarEtiqueta(cadena))return cadena;
+				else{
+					err.resultado(11, 1, linea);
+					return "NULL";
+				}
 			else {
 				err.resultado(0, 1, linea);
 				return "NULL";
@@ -237,10 +321,6 @@ public class Automata {
 				aux = t.busqueda(cadena);
 				if(aux != null ){
 					return aux;
-				}
-				
-				else if(cadena.compareToIgnoreCase("ORG") == 0 || cadena.compareToIgnoreCase("END") == 0 ){
-					return null;
 				}
 				
 				else{

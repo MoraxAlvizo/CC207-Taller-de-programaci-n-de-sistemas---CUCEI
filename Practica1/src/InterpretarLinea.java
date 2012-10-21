@@ -20,6 +20,9 @@ public class InterpretarLinea {
 	/** El codop. */
 	String codop;
 	
+	/** Directiva. */
+	Directivas directiva;
+	
 	/** Codigo de operacion. */
 	CodigosDeOperacion codigooperacion;
 	
@@ -29,11 +32,23 @@ public class InterpretarLinea {
 	/** El modo. */
 	String modo;
 	
+	/** Modo. */
+	ModosDireccionamiento modos;
+	
+	/** Contador de localidades. */
+	ContadorDeLocalidades contadorlocalidades; 
+	
+	/** Modos de direccionamiento. */
+	ModosDireccionamiento modo2;
+	
 	/** El tabop. atributp donde se encuentran todos los codigos de operaciones validos*/
 	Tabop tabop;
 	
 	/** El err. atributo para el manejo de errores */
 	Errores err;
+	
+	/** Tabla de simbolos. para el manejo de las etiquetas*/
+	TablaSimbolos tabsim;
     
     /** El file nam. direccion del archivo */
     String fileNam;
@@ -58,6 +73,7 @@ public class InterpretarLinea {
 		
 		try {
 			tabop = new Tabop();
+			contadorlocalidades = new ContadorDeLocalidades();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -72,15 +88,17 @@ public class InterpretarLinea {
 	 * @param ints tabla para el archivo ints
 	 * @param errores para el archivo errores
 	 */
-	void crearArchivo(String direccion,DefaultTableModel ints,DefaultTableModel errores){
+	void crearArchivo(String direccion,DefaultTableModel ints,DefaultTableModel errores,DefaultTableModel t){
 		try {
 			this.ints=ints;
 			err = new Errores(errores);
 			err.crearArchivo(direccion);
+			tabsim = new TablaSimbolos(t);
+			tabsim.crearArchivo(direccion);
 			direccion = direccion.replace(".asm", ".inst");
 	        fw = new FileWriter(direccion, false);
 	        pw = new PrintWriter(fw);
-	        pw.println(String.format("%-8s  %-10s  %-10s  %-20s %s","LINEA","ETIQUETA","CODOP","OPERANDO","MODO"));
+	        pw.println(String.format("%-8s  %-10s  %-10s  %-10s  %-20s %s","LINEA","CONTLOC","ETIQUETA","CODOP","OPERANDO","MODO"));
 	        pw.println(".......................................................................................");
 	    } catch (IOException e) {
 	        e.printStackTrace();
@@ -108,8 +126,12 @@ public class InterpretarLinea {
 		if (!linea.isEmpty()&&linea.charAt(0)!=';')
 		{
 			linea=eliminarComentarios(linea);
+			ArrayList<String> lista = Automata.separarTokens(linea);
+			//Iterator<String> tokens = lista.iterator();
+			int menu=lista.size();
+			/*
 			StringTokenizer tokens = new StringTokenizer(linea);
-			int menu=tokens.countTokens();
+			int menu=tokens.countTokens();*/
 			Character primero = linea.charAt(0);
 			error=true;
 			
@@ -156,10 +178,8 @@ public class InterpretarLinea {
 			}// fin del switch
 			
 			
-			if(error == true){
+			if(error == true)
 				return false;
-			}	
-			
 			else
 				return true;
 		}// fin del if
@@ -192,58 +212,93 @@ public class InterpretarLinea {
 	 */
 	boolean analisis(String linea, int inicio, int fin, int contador){
 		
-		StringTokenizer tokens = new StringTokenizer(linea);
+		/*StringTokenizer tokens = new StringTokenizer(linea);*/
 		String token;
-		StringTokenizer obtenermodo;
+		
+		ArrayList<String> lista = Automata.separarTokens(linea);
+		Iterator<String> tokens = lista.iterator();
 	
 		for (int aux = inicio ; aux < fin ; aux++ ){
-			token = tokens.nextToken();
-			
+			token = tokens.next();
+			System.out.println(token);
 			switch(aux){
 			
-			case 0:etiqueta = Automata.analizar(token,err,contador);
+			case 0:etiqueta = Automata.analizar(token,err,contador,tabsim);
 					if (etiqueta.compareTo("NULL")==0){
 						return true;
 					}
 					break;
-			case 1:codigooperacion = Automata.analizar(token,modo,tabop,err,contador);
+			case 1:
+				directiva = new Directivas(token);
+				if(directiva.regresarDirectiva() == -1)
+				{
+					codigooperacion = Automata.analizar(token,modo,tabop,err,contador);
 					if (codigooperacion == null){
-						if(token.compareToIgnoreCase("ORG") == 0 || token.compareToIgnoreCase("END") == 0){
-							codop = token;
-							break;
-						}
-						else{
-							return true;
-						}
+						return true;
 					}
 					else{
-							codop = codigooperacion.regresarInstruccion();
-							modo = codigooperacion.regresarModos();
-							if ( codigooperacion.regresarSiNecesitaOper() == true && fin < 3){
-								if ( modo.compareTo("INH")!=0 && modo.compareTo("IMM")!=0){
-									err.resultado(2,1,contador);
-									return true;
-								}
-									
+						codop = codigooperacion.regresarInstruccion();
+						modos = codigooperacion.regresarModos();
+						if ( codigooperacion.regresarSiNecesitaOper() == true && fin < 3){
+							if ( modos.regresarModo().compareTo("INH")!=0 && modos.regresarModo().compareTo("IMM")!=0){
+								err.resultado(2,1,contador);
+								return true;
 							}
+									
+						}
+						else if ( modos.regresarModo().compareTo("INH")==0 || modos.regresarModo().compareTo("IMM")==0){
+							
+							contadorlocalidades.bytesPorIncrementar(modos.regresarSumaTotal());
+							modo = modos.regresarModo();
+						}
 					}
-					break;
-			case 2:operando = Automata.analizar(token,err,codigooperacion,contador);
+					
+				}
+				else{
+					
+					if(fin<3 && directiva.regresarDirectiva() != 6){
+						err.resultado(11,2,contador);
+						return true;
+					}
+					
+					if(contadorlocalidades.regresarBanderaORG() && directiva.regresarDirectiva() == 3){
+						err.resultado(11, 0, contador);
+						return true;
+					}
+					contadorlocalidades.banderaEQU(directiva.regresarDirectiva());
+					if(!contadorlocalidades.regresarBanderaORG())
+						contadorlocalidades.banderaOrg(directiva.regresarDirectiva());
+					if(!contadorlocalidades.regresarBanderaORG() && !contadorlocalidades.regresarbanderaEQU()){
+						err.resultado(10,0,contador);
+						contadorlocalidades.banderaOrg(3);
+					}
+					
+				}
+
+				break;
+			case 2:
+				if(directiva.regresarDirectiva() == -1){
+					modos = Automata.analizar(token,err,codigooperacion,contador);
+					if(!contadorlocalidades.regresarBanderaORG()){
+						err.resultado(10,0,contador);
+						contadorlocalidades.banderaOrg(3);
+					}
+					
 					if (codigooperacion.regresarSiNecesitaOper() == false){
 						err.resultado(2,0,contador);
 						return true;
 					}
 					
-					else if (operando != null && operando.compareTo("error")==0){
+					else if (modos != null && modos.regresarModo().compareTo("error")==0){
 						return true;
 					}
 					
 					else{
 						
 						try{
-							obtenermodo = new StringTokenizer(operando,"|");
-							operando = obtenermodo.nextToken();
-							modo = obtenermodo.nextToken();
+							operando = token;
+							modo = modos.regresarModo();
+							contadorlocalidades.bytesPorIncrementar(modos.regresarSumaTotal());
 						}
 						catch(Exception e){
 							err.resultado(4, 0, contador);
@@ -251,11 +306,26 @@ public class InterpretarLinea {
 						}
 						
 					}
+				}
+				else{
+					if(directiva.regresarDirectiva()==29){
+						if(directiva.validarEQU(token, err, contador, etiqueta,contadorlocalidades)){
+							operando = token;
+						}
+						else{
+							return true;
+						}
+					}
+					else{
+						operando = Automata.analizar(token,err,directiva,contador,contadorlocalidades);
+					}
+				}
 					
-					break;
+				break;
 			}// fin del switch
 						
 		}// fin del for
+		System.out.println(contadorlocalidades.contador);
 		return false;
 	}
 	
@@ -267,15 +337,36 @@ public class InterpretarLinea {
 	 */
 	public void resultado(int contador) {
 
-			Object[] fila = new Object[5];
+		boolean banderaTabsim = false;
+			Object[] fila = new Object[6];
 			fila[0]=contador; 
-			fila[1]=etiqueta;
-			fila[2]=codop;
-			fila[3]=operando;
-			fila[4]=modo;
+			if(contadorlocalidades.regresarContadorEQU() > -1){
+				fila[1]=contadorlocalidades.regresarContadorEQUHexa();
+				tabsim.resultado(etiqueta, contadorlocalidades.regresarContadorEQUHexa());
+				contadorlocalidades.asignarContadorEQU(-1);
+				banderaTabsim = true;
+			}
+			else{
+				fila[1]=contadorlocalidades.regresarContadorORGHexa();
+			}
+			
+			if(etiqueta.compareTo("NULL")!=0 && !banderaTabsim){
+				tabsim.resultado(etiqueta,contadorlocalidades.regresarContadorORGHexa());
+			}
+			fila[2]=etiqueta;
+			if(codop != null)fila[3]=codop;
+			else fila[3]=directiva.regresarNombreDirectiva();
+			fila[4]=operando;
+			fila[5]=modo;
 			ints.addRow(fila);
-			pw.println(String.format("%-8s  %-10s  %-10s  %-20s %s",contador,etiqueta,codop,operando,modo));
-		
+			
+			
+			if(codop != null)
+				pw.println(String.format("%-8s  %-10s  %-10s  %-10s  %-20s %s",contador,Integer.toHexString(contadorlocalidades.contador),etiqueta,codop,operando,modo));
+			else
+				pw.println(String.format("%-8s  %-10s  %-10s  %-10s  %-20s %s",contador,Integer.toHexString(contadorlocalidades.contador),etiqueta,directiva.regresarNombreDirectiva(),operando,modo));
+			
+			contadorlocalidades.incrementarContador();
 	}
 	
 	
@@ -291,6 +382,7 @@ public class InterpretarLinea {
 	    pw.close();
 	    fw.close();
 	    err.cerrarArchivo();
+	    tabsim.cerrarArchivo();
 	}
 	
 	/**
@@ -299,7 +391,7 @@ public class InterpretarLinea {
 	 * @return true, if successful
 	 */
 	boolean validarEND(){
-		if (codop.compareToIgnoreCase("END")==0){
+		if (directiva.regresarDirectiva()==6){
 			return true;
 		}
 		else return false;

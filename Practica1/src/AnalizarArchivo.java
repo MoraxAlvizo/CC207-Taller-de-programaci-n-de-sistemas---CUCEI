@@ -71,13 +71,13 @@ public class AnalizarArchivo {
      * @return true, if successful
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    boolean analizar(DefaultTableModel ints, DefaultTableModel errores)throws IOException{
+    boolean analizar(DefaultTableModel ints, DefaultTableModel errores,DefaultTableModel tabsim)throws IOException{
     	String linea;
     	int contador=0;
     	boolean banderaEND = false;
     	if(verificarArchivo())
     	{
-    		interprete.crearArchivo(direccion,ints,errores);
+    		interprete.crearArchivo(direccion,ints,errores,tabsim);
     		while((linea=archivo.readLine())!=null){
         		contador++;
         		

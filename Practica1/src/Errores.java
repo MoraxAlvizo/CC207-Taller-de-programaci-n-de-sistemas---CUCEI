@@ -35,7 +35,7 @@ public class Errores {
 	Errores(DefaultTableModel err){
 		this.err = err;
 		
-		errores = new String [9][3];
+		errores = new String [12][3];
 		
 		//ERRORES DE ETIQUETA
 		errores [0][0]= new String("ERROR: lexicografico en Etiqueta");
@@ -73,7 +73,16 @@ public class Errores {
 		errores [8][1]= new String("ERROR: error en el formato del numero");
 		errores [8][2]= new String("ERROR: error en el formato de etiqueta en el operando");
 		
-			 
+		//ERRORES EN OPERANDOS DE LOS DIRECTIVOS
+		errores [9][0]= new String("ERROR: formato de operando invalido para la directiva");
+		errores [9][1]= new String("ERROR: operando fuera de rango para la directiva");
+		errores [9][2]= new String("ERROR: formato invalido para el FCC");
+		errores [10][0]= new String("ERROR: ORG no encontrado al inicio del archivo o despues de los EQU");
+		errores [10][1]= new String("ERROR: Falta etiqueta en el EQU");
+		errores [10][2]= new String("ERROR: formato invalido para el FCC");	 
+		errores [11][0]= new String("ERROR: ya existe un ORG");
+		errores [11][1]= new String("ERROR: ya existe la ETIQUETA en la tabla de simbolos");
+		errores [11][2]= new String("ERROR: todas las directivas deben de llevar operando");
 	}
 	
 	/**

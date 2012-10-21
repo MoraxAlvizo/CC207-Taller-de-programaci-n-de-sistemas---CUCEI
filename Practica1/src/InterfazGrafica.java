@@ -19,6 +19,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.JTabbedPane; 
 import java.awt.Font;
 import java.io.IOException;
 import javax.swing.JButton;
@@ -32,6 +33,7 @@ import javax.swing.ImageIcon;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.ComponentOrientation;
 
 
 
@@ -44,17 +46,25 @@ public class InterfazGrafica extends JFrame {
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 	
+	private JTabbedPane panelConFichas;// crando herramienta de fichas 
+	
 	/** The content pane. */
 	private JPanel contentPane;
 	
 	/** The tabla_errores. */
 	private JTable tabla_errores;
 	
+	/** The tabla tabsim. */
+	private JTable tabla_tabsim;
+	
 	/** The resultado. */
 	DefaultTableModel resultado;
 	
 	/** The errores. */
 	DefaultTableModel errores;
+	
+	/** The tabsim. */
+	DefaultTableModel tabsim;
 	
 	/** The fc. */
 	@SuppressWarnings("unused")
@@ -112,6 +122,10 @@ public class InterfazGrafica extends JFrame {
 	 * Create the frame.
 	 */
 	public InterfazGrafica() {
+		
+		UIManager.put ("TabbedPane.selected", Color.DARK_GRAY);
+		UIManager.put ("TabbedPane.borderHightlightColor", Color.GRAY);
+
 		setIconImage(Toolkit.getDefaultToolkit().getImage("/home/omar/Imágenes/procesador-icono-8477-128.png"));
 		
 		try {
@@ -126,7 +140,7 @@ public class InterfazGrafica extends JFrame {
 		setBackground(SystemColor.windowText);
 		setTitle("CC207 TALLER PROGRAMACION DE SISTEMAS Practica 2");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1060, 602);
+		setBounds(100, 100, 867, 607);
 		
 		
 		final JFileChooser fc = new JFileChooser();
@@ -141,6 +155,16 @@ public class InterfazGrafica extends JFrame {
 		contentPane.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+		
+		panelConFichas = new JTabbedPane();
+		panelConFichas.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+		panelConFichas.setBorder(null);
+		panelConFichas.setFont(new Font("Courier 10 Pitch", Font.BOLD, 12));
+		panelConFichas.setTabPlacement(JTabbedPane.BOTTOM);
+		panelConFichas.setBackground(Color.darkGray);
+		panelConFichas.setForeground(Color.white);
+		panelConFichas.setBounds(470, 70, 382, 300);
+		contentPane.add(panelConFichas);
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBackground(SystemColor.activeCaption);
@@ -158,18 +182,30 @@ public class InterfazGrafica extends JFrame {
 		scrollPane_1.setForeground(SystemColor.activeCaption);
 		scrollPane_1.setBorder(null);
 		scrollPane_1.setBackground(SystemColor.activeCaption);
-		scrollPane_1.setBounds(470, 70, 576, 300);
-		contentPane.add(scrollPane_1);
+
+		panelConFichas.addTab("Archivo inst",null,scrollPane_1,"inst");
+		
+		JScrollPane scrollPane_3 = new JScrollPane();
+		scrollPane_3.setForeground(SystemColor.activeCaption);
+		scrollPane_3.setBorder(null);
+		scrollPane_3.setBackground(SystemColor.activeCaption);
+		panelConFichas.addTab("Tab. simbolos",null,scrollPane_3,"tds");
+		
+		panelConFichas.setBackgroundAt(0,Color.LIGHT_GRAY);
+		panelConFichas.setBackgroundAt(1,Color.LIGHT_GRAY);
+		
 		
 		inicializarTablaAnalizar();
 		inicializarTablaErrores();
+		inicializarTablaTabsim();
 		scrollPane_1.setViewportView(table_1);
 		
 		JScrollPane scrollPane_2 = new JScrollPane();
-		scrollPane_2.setBounds(10, 427, 1036, 112);
+		scrollPane_2.setBounds(10, 427, 842, 112);
 		contentPane.add(scrollPane_2);
 
 		scrollPane_2.setViewportView(tabla_errores);
+		scrollPane_3.setViewportView(tabla_tabsim);
 		
 		
 		JButton btnAnalizar = new JButton("Analizar");
@@ -186,7 +222,7 @@ public class InterfazGrafica extends JFrame {
 				
 				if (bandera_analisis == false ){
 					try {
-						bandera_analisis = ensamblador.analizar(resultado,errores);
+						bandera_analisis = ensamblador.analizar(resultado,errores,tabsim);
 					} catch (IOException e1) {
 						e1.printStackTrace();
 					}
@@ -197,7 +233,7 @@ public class InterfazGrafica extends JFrame {
 		
 			}
 		});
-		btnAnalizar.setBounds(900, 5, 146, 58);
+		btnAnalizar.setBounds(704, 6, 146, 58);
 		contentPane.add(btnAnalizar);
 		
 		JLabel lblArchivoAsm = new JLabel("ASM");
@@ -273,6 +309,7 @@ public class InterfazGrafica extends JFrame {
 		MyRenderer r= new MyRenderer(Color.DARK_GRAY ,Color.LIGHT_GRAY );
 		resultado = new DefaultTableModel();
 		resultado.addColumn("No.");
+		resultado.addColumn("ConLoc");
 		resultado.addColumn("Etiqueta");
 		resultado.addColumn("Cod.op");
 		resultado.addColumn("Operando");
@@ -294,9 +331,13 @@ public class InterfazGrafica extends JFrame {
 		table_1.getColumnModel().getColumn(2).setMaxWidth(60);
 		table_1.getColumnModel().getColumn(2).setPreferredWidth(60);
 		table_1.getColumnModel().getColumn(3).setHeaderRenderer(r);
-		table_1.getColumnModel().getColumn(3).setMaxWidth(200);
-		table_1.getColumnModel().getColumn(3).setPreferredWidth(200);
+		table_1.getColumnModel().getColumn(3).setMaxWidth(60);
+		table_1.getColumnModel().getColumn(3).setPreferredWidth(60);
 		table_1.getColumnModel().getColumn(4).setHeaderRenderer(r);
+		table_1.getColumnModel().getColumn(4).setMaxWidth(200);
+		table_1.getColumnModel().getColumn(4).setPreferredWidth(150);
+		table_1.getColumnModel().getColumn(5).setHeaderRenderer(r);
+		
 		
 
 	}
@@ -327,6 +368,23 @@ public class InterfazGrafica extends JFrame {
 
 	}
 	
+	public void inicializarTablaTabsim(){
+		MyRenderer r= new MyRenderer(Color.DARK_GRAY ,Color.LIGHT_GRAY);
+		tabsim = new DefaultTableModel();
+		tabsim.addColumn("Etiqueta");
+		tabsim.addColumn("Valor");
+		tabla_tabsim = new JTable(tabsim);
+		tabla_tabsim.setBorder(null);
+		tabla_tabsim.setGridColor(SystemColor.activeCaption);
+		tabla_tabsim.setSelectionBackground(Color.LIGHT_GRAY);
+		tabla_tabsim.setForeground(Color.WHITE);
+		tabla_tabsim.setBackground(SystemColor.activeCaption);
+		tabla_tabsim.setEnabled(false);
+		tabla_tabsim.getColumnModel().getColumn(0).setHeaderRenderer(r);
+		tabla_tabsim.getColumnModel().getColumn(1).setHeaderRenderer(r);
+
+	}
+	
 	/**
 	 * Vaciar tablas.
 	 */
@@ -336,6 +394,9 @@ public class InterfazGrafica extends JFrame {
 		}
 		while (errores.getRowCount()!=0){
             errores.removeRow(0);
+		}
+		while (tabsim.getRowCount()!=0){
+            tabsim.removeRow(0);
 		}
 	}
 }

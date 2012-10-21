@@ -21,6 +21,11 @@ public class ModosDireccionamiento {
 	/** La suma total. */
 	Integer sumaTotal;
 	
+	ModosDireccionamiento(){}
+	ModosDireccionamiento(String error){
+		modoDireccionamiento = error;
+	}
+	
 	/**
 	 * Insertar modo. Metodo para asignarle el nombre al modo de direccionamiento
 	 *
@@ -90,6 +95,10 @@ public class ModosDireccionamiento {
 	 */
 	Integer regresarPorCalcular(){
 		return porCalcular;
+	}
+	
+	Integer regresarSumaTotal(){
+		return sumaTotal;
 	}
 
 }
