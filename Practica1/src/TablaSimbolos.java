@@ -2,6 +2,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 
 import javax.swing.table.DefaultTableModel;
@@ -11,6 +12,7 @@ class TablaSimbolos {
 	
 	/** Lista de etiquetas*/
 	ArrayList <String> listaEtiquetas;
+	ArrayList <String> contador;
 	
 	/** El file nam. direccion del archivo */
     String fileNam;
@@ -31,6 +33,7 @@ class TablaSimbolos {
     void crearArchivo(String direccion){
 		try {
 			listaEtiquetas = new ArrayList<String>();
+			contador = new ArrayList<String>();
 			direccion = direccion.replace(".asm", ".tds");
 	        fw = new FileWriter(direccion, false);
 	        pw = new PrintWriter(fw);
@@ -51,8 +54,8 @@ class TablaSimbolos {
 		fila[1]=conloc;
 		tabsim.addRow(fila);
 		listaEtiquetas.add(etiqueta);
+		contador.add(conloc);
 		pw.println(String.format("%-8s  %s",fila[0],fila[1]));
-		
 	}
     
     Boolean validarEtiqueta(String etiqueta){
@@ -60,9 +63,24 @@ class TablaSimbolos {
     	else return false;
     }
     
+    String regresarConloc(String etiqueta){
+    	if(listaEtiquetas.indexOf(etiqueta) == -1)return null;
+    	else return contador.get(listaEtiquetas.indexOf(etiqueta));
+    }
+    
     public void cerrarArchivo() throws IOException{
 	    pw.close();
 	    fw.close();
 	}
+    
+    public void mostrarTabsim(){
+    	Iterator<String> i =  listaEtiquetas.iterator();
+    	Iterator<String> j =  contador.iterator();
+    	
+    	while(i.hasNext() && j.hasNext()){
+    		System.out.print(i.next() + "  ");
+    		System.out.println(j.next());
+    	}
+    }
 	
 }

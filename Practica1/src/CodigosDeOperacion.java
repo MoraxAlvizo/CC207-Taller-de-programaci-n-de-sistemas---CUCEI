@@ -119,5 +119,18 @@ public class CodigosDeOperacion {
 	ArrayList<ModosDireccionamiento> regresarListaModos(){
 		return lista;
 	}
+	
+	ModosDireccionamiento regresarModo(String modo){
+		iterador = lista.listIterator();
+		ModosDireccionamiento aux;
+    	while(iterador.hasNext()){
+    		aux = iterador.next();
+    		if(aux.regresarModo().compareTo(modo)== 0){
+    			return aux;
+    		}
+    	}
+    	
+    	return null;
+	}
 
 }

@@ -75,9 +75,11 @@ public class AnalizarArchivo {
     	String linea;
     	int contador=0;
     	boolean banderaEND = false;
+    	Errores err;
+    	
     	if(verificarArchivo())
     	{
-    		interprete.crearArchivo(direccion,ints,errores,tabsim);
+    		interprete.crearArchivo(direccion,errores,tabsim);
     		while((linea=archivo.readLine())!=null){
         		contador++;
         		
@@ -91,9 +93,16 @@ public class AnalizarArchivo {
         		else continue;
         	}
     		
+    		archivo.close();
     		interprete.cerrarArchivo(banderaEND);
-        	archivo.seek(0);
-        	JOptionPane.showMessageDialog(null,"Archivo creado en: "+ direccion.replace(".asm", ".ints"));
+    		err = interprete.regresarErrores();
+    		
+    		if(!err.regresarBanderaError()){
+    			GeneradorDeCodigoMaquina a = new GeneradorDeCodigoMaquina(direccion,interprete.regresarTabop(),interprete.regresarTabSim(), ints, errores);
+        		a.generarCodigo();
+            	JOptionPane.showMessageDialog(null,"Archivo creado en: "+ direccion.replace(".asm", ".ints"));
+    		}
+    		else JOptionPane.showMessageDialog(null,"Archivo inst no creado por que tiene errores","ERROR", JOptionPane.ERROR_MESSAGE);
         	return true;
     	}
     	

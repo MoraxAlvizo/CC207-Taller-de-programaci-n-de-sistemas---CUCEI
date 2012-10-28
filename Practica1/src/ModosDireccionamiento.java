@@ -100,5 +100,9 @@ public class ModosDireccionamiento {
 	Integer regresarSumaTotal(){
 		return sumaTotal;
 	}
+	
+	String regresarCodigoMaquina(){
+		return codigoMaquina;
+	}
 
 }

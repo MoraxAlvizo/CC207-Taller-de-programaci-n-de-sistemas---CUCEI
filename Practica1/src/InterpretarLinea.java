@@ -59,8 +59,6 @@ public class InterpretarLinea {
     /** El pw. */
     PrintWriter pw;
     
-    /** El ints. Tabla el manejo del archivo .inst*/
-    DefaultTableModel ints;
     
     /** El error. Si esta en true hubo un error si esta el false no */
     boolean error;
@@ -88,15 +86,15 @@ public class InterpretarLinea {
 	 * @param ints tabla para el archivo ints
 	 * @param errores para el archivo errores
 	 */
-	void crearArchivo(String direccion,DefaultTableModel ints,DefaultTableModel errores,DefaultTableModel t){
+	void crearArchivo(String direccion, DefaultTableModel errores,DefaultTableModel t){
 		try {
-			this.ints=ints;
+			contadorlocalidades = new ContadorDeLocalidades();
 			err = new Errores(errores);
 			err.crearArchivo(direccion);
 			tabsim = new TablaSimbolos(t);
 			tabsim.crearArchivo(direccion);
-			direccion = direccion.replace(".asm", ".inst");
-	        fw = new FileWriter(direccion, false);
+//			direccion = direccion.replace(".asm", ".inst");
+	        fw = new FileWriter("temporal.inst", false);
 	        pw = new PrintWriter(fw);
 	        pw.println(String.format("%-8s  %-10s  %-10s  %-10s  %-20s %s","LINEA","CONTLOC","ETIQUETA","CODOP","OPERANDO","MODO"));
 	        pw.println(".......................................................................................");
@@ -127,11 +125,7 @@ public class InterpretarLinea {
 		{
 			linea=eliminarComentarios(linea);
 			ArrayList<String> lista = Automata.separarTokens(linea);
-			//Iterator<String> tokens = lista.iterator();
 			int menu=lista.size();
-			/*
-			StringTokenizer tokens = new StringTokenizer(linea);
-			int menu=tokens.countTokens();*/
 			Character primero = linea.charAt(0);
 			error=true;
 			
@@ -256,7 +250,7 @@ public class InterpretarLinea {
 				}
 				else{
 					
-					if(fin<3 && directiva.regresarDirectiva() != 6){
+					if(fin < 3 && directiva.regresarDirectiva() != 6){
 						err.resultado(11,2,contador);
 						return true;
 					}
@@ -316,16 +310,16 @@ public class InterpretarLinea {
 							return true;
 						}
 					}
-					else{
-						operando = Automata.analizar(token,err,directiva,contador,contadorlocalidades);
+					else if((operando = Automata.analizar(token,err,directiva,contador,contadorlocalidades)) == null){
+						return true;
 					}
+					
 				}
 					
 				break;
 			}// fin del switch
 						
 		}// fin del for
-		System.out.println(contadorlocalidades.contador);
 		return false;
 	}
 	
@@ -358,13 +352,11 @@ public class InterpretarLinea {
 			else fila[3]=directiva.regresarNombreDirectiva();
 			fila[4]=operando;
 			fila[5]=modo;
-			ints.addRow(fila);
-			
 			
 			if(codop != null)
-				pw.println(String.format("%-8s  %-10s  %-10s  %-10s  %-20s %s",contador,Integer.toHexString(contadorlocalidades.contador),etiqueta,codop,operando,modo));
+				pw.println(String.format("%-8s  %-10s  %-10s  %-10s  %-20s %s",fila));
 			else
-				pw.println(String.format("%-8s  %-10s  %-10s  %-10s  %-20s %s",contador,Integer.toHexString(contadorlocalidades.contador),etiqueta,directiva.regresarNombreDirectiva(),operando,modo));
+				pw.println(String.format("%-8s  %-10s  %-10s  %-10s  %-20s %s",fila));
 			
 			contadorlocalidades.incrementarContador();
 	}
@@ -395,6 +387,19 @@ public class InterpretarLinea {
 			return true;
 		}
 		else return false;
+	}
+	
+	
+	Tabop regresarTabop(){
+		return tabop;
+	}
+	
+	TablaSimbolos regresarTabSim(){
+		return tabsim;
+	}
+	
+	Errores regresarErrores(){
+		return err;
 	}
 	
 }

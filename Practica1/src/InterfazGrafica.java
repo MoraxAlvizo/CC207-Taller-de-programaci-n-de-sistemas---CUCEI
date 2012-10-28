@@ -140,7 +140,7 @@ public class InterfazGrafica extends JFrame {
 		setBackground(SystemColor.windowText);
 		setTitle("CC207 TALLER PROGRAMACION DE SISTEMAS Practica 2");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 867, 607);
+		setBounds(100, 100, 932, 574);
 		
 		
 		final JFileChooser fc = new JFileChooser();
@@ -163,7 +163,7 @@ public class InterfazGrafica extends JFrame {
 		panelConFichas.setTabPlacement(JTabbedPane.BOTTOM);
 		panelConFichas.setBackground(Color.darkGray);
 		panelConFichas.setForeground(Color.white);
-		panelConFichas.setBounds(470, 70, 382, 300);
+		panelConFichas.setBounds(470, 70, 450, 300);
 		contentPane.add(panelConFichas);
 		
 		JScrollPane scrollPane = new JScrollPane();
@@ -201,7 +201,7 @@ public class InterfazGrafica extends JFrame {
 		scrollPane_1.setViewportView(table_1);
 		
 		JScrollPane scrollPane_2 = new JScrollPane();
-		scrollPane_2.setBounds(10, 427, 842, 112);
+		scrollPane_2.setBounds(10, 425, 910, 114);
 		contentPane.add(scrollPane_2);
 
 		scrollPane_2.setViewportView(tabla_errores);
@@ -229,11 +229,11 @@ public class InterfazGrafica extends JFrame {
 				}
 				
 				else
-					JOptionPane.showMessageDialog( null , "Archivo ya analizado","ERROR DE ANANLISIS" , JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog( null , "Archivo ya analizado","ERROR DE ANALISIS" , JOptionPane.ERROR_MESSAGE);
 		
 			}
 		});
-		btnAnalizar.setBounds(704, 6, 146, 58);
+		btnAnalizar.setBounds(774, 6, 146, 58);
 		contentPane.add(btnAnalizar);
 		
 		JLabel lblArchivoAsm = new JLabel("ASM");
@@ -311,9 +311,10 @@ public class InterfazGrafica extends JFrame {
 		resultado.addColumn("No.");
 		resultado.addColumn("ConLoc");
 		resultado.addColumn("Etiqueta");
-		resultado.addColumn("Cod.op");
+		resultado.addColumn("Codop");
 		resultado.addColumn("Operando");
 		resultado.addColumn("Modos");
+		resultado.addColumn("CodMaq");
 		table_1 = new JTable(resultado);
 		table_1.setBorder(null);
 		table_1.setGridColor(SystemColor.activeCaption);
@@ -337,6 +338,9 @@ public class InterfazGrafica extends JFrame {
 		table_1.getColumnModel().getColumn(4).setMaxWidth(200);
 		table_1.getColumnModel().getColumn(4).setPreferredWidth(150);
 		table_1.getColumnModel().getColumn(5).setHeaderRenderer(r);
+		table_1.getColumnModel().getColumn(4).setMaxWidth(100);
+		table_1.getColumnModel().getColumn(4).setPreferredWidth(100);
+		table_1.getColumnModel().getColumn(6).setHeaderRenderer(r);
 		
 		
 

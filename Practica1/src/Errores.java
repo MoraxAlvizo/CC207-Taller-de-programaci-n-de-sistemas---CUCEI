@@ -26,6 +26,8 @@ public class Errores {
     
     /** Los err. atributo para el manejo de la tabla de errores */
     DefaultTableModel err;
+    
+    Boolean banderaError;
 	
 	/**
 	 * Instantiates a new errores.
@@ -35,11 +37,13 @@ public class Errores {
 	Errores(DefaultTableModel err){
 		this.err = err;
 		
+		banderaError = false;
 		errores = new String [12][3];
 		
 		//ERRORES DE ETIQUETA
 		errores [0][0]= new String("ERROR: lexicografico en Etiqueta");
 		errores [0][1]= new String("ERROR: tamaño excesivo en Etiqueta ");
+		errores [0][2]= new String("ERROR: Etiqueta en operando no encontrada en la Tabla de Simbolos ");
 		
 		//ERRORES DE CODOP
 		errores [1][0]= new String("ERROR: lexicografico en CODOP");
@@ -119,7 +123,7 @@ public class Errores {
 		fila[0]=linea;
 		fila[1]=donde +""+ no_error;
 		fila[2]=errores[donde][no_error];
-
+		banderaError = true;
 		err.addRow(fila);
 		pw.println(String.format("%-8s  %-12s  %s",fila[0],fila[1],fila[2]));
 		
@@ -133,6 +137,10 @@ public class Errores {
 	public void cerrarArchivo() throws IOException{
 	    pw.close();
 	    fw.close();
+	}
+	
+	public Boolean regresarBanderaError(){
+		return banderaError;
 	}
 
 }

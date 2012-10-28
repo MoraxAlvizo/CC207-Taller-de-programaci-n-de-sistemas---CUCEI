@@ -126,7 +126,7 @@ public class Automata {
 			bandera = d.validarORG(cadena,err,linea,c);
 			if(bandera)c.banderaOrg(d.regresarDirectiva());
 			break;
-		case 9:case 17:case 13: 
+		case 9:case 13: 
 			bandera = d.validarDirectivasConstantes1Byte(cadena,err,linea,c);
 			break;
 		case 8:case 12:case 27: 
@@ -140,6 +140,9 @@ public class Automata {
 			break;
 		case 22:case 26:		
 			bandera = d.validarDirectivasEspacio2Byte(cadena,err,linea,c);   
+			break;
+		case 17:
+			bandera = d.validarDirectivasConstantes1Byte(cadena,err,linea,c);
 			break;
 		default: bandera = false;
 		}
@@ -188,7 +191,7 @@ public class Automata {
 				}
 				else return Integer.parseInt(operando.substring(1), 8);
 			case '$':
-				if(operando.charAt(1)=='F'){
+				if(operando.charAt(1)=='F' || operando.charAt(1)=='f'){
 					operando = operando.substring(1);
 					while(operando.length() > 5){
 						if(operando.charAt(0)!='F')return 65536;
@@ -311,6 +314,7 @@ public class Automata {
 	 * @param linea - numero de linea
 	 * @return cadena if pertenece a CODOP else NULL
 	 */
+	
 	static CodigosDeOperacion analizar(String cadena, String modo, Tabop t, Errores err, int linea){
 		
 		CodigosDeOperacion aux;

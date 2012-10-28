@@ -127,15 +127,12 @@ public class Tabop {
 	    	
 	    	CodigosDeOperacion aux = null;
 	    	iterador=lista.listIterator();
-	    	
-	    	
 	    	while (iterador.hasNext()){
 	    		aux=iterador.next();
 	    		if(codop.compareToIgnoreCase(aux.regresarInstruccion())==0){
 	    			return aux;
 	    		}
 	    	}
-	    	
 	    
 	    	return null;
 	    }
