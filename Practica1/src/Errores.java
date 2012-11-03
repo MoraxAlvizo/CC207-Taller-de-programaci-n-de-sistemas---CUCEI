@@ -53,7 +53,7 @@ public class Errores {
 		//ERRORES DE OPERANDO
 		errores [2][0]= new String("ERROR: No debe llevar operando");
 		errores [2][1]= new String("ERROR: Debe llevar operando");
-		errores [2][2]= new String("ERROR: error en el formato de etiqueta en el operando o error en el formato del numero");
+		errores [2][2]= new String("ERROR: error en el formato de etiqueta en el operando o error en el formato del numero: \nLineas eliminadas:");
 		
 		//ERRORES DE LINEA
 		errores [3][0]= new String("ERROR: exceso de tokens en la linea");
@@ -141,6 +141,16 @@ public class Errores {
 	
 	public Boolean regresarBanderaError(){
 		return banderaError;
+	}
+	
+	public void DescripcionError(String linea){
+		Object[] fila = new Object[3];
+		fila[0]=null;
+		fila[1]=null;
+		fila[2]=linea;
+		banderaError = true;
+		err.addRow(fila);
+		pw.println(String.format("%-8s  %-12s  %s",fila[0],fila[1],fila[2]));
 	}
 
 }

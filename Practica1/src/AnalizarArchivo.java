@@ -96,7 +96,7 @@ public class AnalizarArchivo {
     		archivo.close();
     		interprete.cerrarArchivo(banderaEND);
     		err = interprete.regresarErrores();
-    		
+    		err.cerrarArchivo();
     		if(!err.regresarBanderaError()){
     			GeneradorDeCodigoMaquina a = new GeneradorDeCodigoMaquina(direccion,interprete.regresarTabop(),interprete.regresarTabSim(), ints, errores);
         		a.generarCodigo();

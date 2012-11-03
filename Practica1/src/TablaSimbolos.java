@@ -11,8 +11,7 @@ import javax.swing.table.DefaultTableModel;
 class TablaSimbolos {
 	
 	/** Lista de etiquetas*/
-	ArrayList <String> listaEtiquetas;
-	ArrayList <String> contador;
+	ArrayList <Etiqueta> listaEtiquetas;
 	
 	/** El file nam. direccion del archivo */
     String fileNam;
@@ -26,16 +25,17 @@ class TablaSimbolos {
     /** El ints. Tabla el manejo del archivo .tabsim*/
     DefaultTableModel tabsim;
     
+    String direccion;
+    
     TablaSimbolos(DefaultTableModel tabsim){
     	this.tabsim = tabsim;
     }
     
     void crearArchivo(String direccion){
 		try {
-			listaEtiquetas = new ArrayList<String>();
-			contador = new ArrayList<String>();
-			direccion = direccion.replace(".asm", ".tds");
-	        fw = new FileWriter(direccion, false);
+			listaEtiquetas = new ArrayList<Etiqueta>();
+			this.direccion = direccion.replace(".asm", ".tds");
+	        fw = new FileWriter(this.direccion, false);
 	        pw = new PrintWriter(fw);
 	        pw.println(String.format("%-8s  %s","ETIQUETA","VALOR"));
 	        pw.println(".........................");
@@ -53,8 +53,7 @@ class TablaSimbolos {
 		fila[0]=etiqueta;
 		fila[1]=conloc;
 		tabsim.addRow(fila);
-		listaEtiquetas.add(etiqueta);
-		contador.add(conloc);
+		listaEtiquetas.add(new Etiqueta(etiqueta,conloc));
 		pw.println(String.format("%-8s  %s",fila[0],fila[1]));
 	}
     
@@ -63,9 +62,27 @@ class TablaSimbolos {
     	else return false;
     }
     
-    String regresarConloc(String etiqueta){
-    	if(listaEtiquetas.indexOf(etiqueta) == -1)return null;
-    	else return contador.get(listaEtiquetas.indexOf(etiqueta));
+    Etiqueta regresarEtiqueta(String etiqueta){
+    	
+    	if(etiqueta.compareToIgnoreCase("NULL")==0)return null;
+    	else{
+    		for(Etiqueta aux : listaEtiquetas){
+        		if(aux.regresarNombre().equals(etiqueta))
+        			return aux;
+        	}
+        	return null;
+    	}
+    	
+    }
+    
+    String regresarConloc(String etiqueta, Integer nolinea){
+    	for(Etiqueta aux : listaEtiquetas){
+    		if(aux.regresarNombre().equals(etiqueta)){
+    			aux.agregarOperando(nolinea);
+    			return aux.regresarConloc();
+    		}	
+    	}
+    	return null;
     }
     
     public void cerrarArchivo() throws IOException{
@@ -74,13 +91,40 @@ class TablaSimbolos {
 	}
     
     public void mostrarTabsim(){
-    	Iterator<String> i =  listaEtiquetas.iterator();
-    	Iterator<String> j =  contador.iterator();
+    	Iterator<Etiqueta> i =  listaEtiquetas.iterator();
     	
-    	while(i.hasNext() && j.hasNext()){
-    		System.out.print(i.next() + "  ");
-    		System.out.println(j.next());
+    	while(i.hasNext()){
+    		System.out.print(i.next().toString());
     	}
+    }
+    
+    public void eliminarEtiqueta(Etiqueta etiqueta){
+    	int linea;
+    	if((linea = listaEtiquetas.indexOf(etiqueta)) != -1){
+    		tabsim.removeRow(linea);
+    		listaEtiquetas.remove(linea);
+    	}
+    }
+    
+    public void sobreescribirTDS(){
+        try {
+			fw = new FileWriter(direccion, false);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+        pw = new PrintWriter(fw);
+        pw.println(String.format("%-8s  %s","ETIQUETA","VALOR"));
+        pw.println("........................:...........");
+        Iterator<Etiqueta> i =  listaEtiquetas.iterator();	
+    	while(i.hasNext()){
+    		Etiqueta aux = i.next();
+    		pw.println(String.format("%-8s  %s",aux.nombre,aux.conloc));
+    	}
+    		
+        
+    	try {
+			cerrarArchivo();
+		} catch (IOException e) {}
     }
 	
 }

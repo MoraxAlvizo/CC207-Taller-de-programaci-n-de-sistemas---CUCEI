@@ -82,4 +82,5 @@ class ContadorDeLocalidades {
 		return contadorHexa;
 	}
 	
+	
 }

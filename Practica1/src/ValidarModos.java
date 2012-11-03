@@ -74,7 +74,7 @@ public class ValidarModos {
 		
 		Integer nodecimal;
 		
-		if(operando.matches("[$]?[@]?[%]?[-]?[A-F0-9]+")){
+		if(operando.matches("[$]?[@]?[%]?[-]?[A-F0-9a-f]+")){
 			try{
 				nodecimal = Automata.cambiarABaseDecimal(operando);
 	

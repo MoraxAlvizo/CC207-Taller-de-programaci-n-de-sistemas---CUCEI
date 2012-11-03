@@ -4,7 +4,10 @@ import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.StringTokenizer;
+
 import javax.swing.table.DefaultTableModel;
 
 class GeneradorDeCodigoMaquina {
@@ -13,26 +16,28 @@ class GeneradorDeCodigoMaquina {
 	File temporal;
 	FileReader fr = null;
     BufferedReader br = null;
-    Integer nolinea;
-    String contador;
-    String etiqueta;
-    CodigosDeOperacion codop;
-    Directivas directiva;
-    String operando;
-    ModosDireccionamiento modo;
-    String codigomaquina;
+    ArrayList<Linea> archivoinst = new ArrayList<Linea>();
 	Tabop tabop;
     FileWriter fw;
     PrintWriter pw;
     TablaSimbolos ts;
     DefaultTableModel inst;
     Errores err;
+    Integer diferencias;
+    					//X		Y	SP	 PC
+    static String[] rr= {"00","01","10","11"}; 
+    						//	   1	  2		3	    4	   5	  6	     7		 8		
+    static String[][] prepost = {{"0000","0001","0010","0011","0100","0101","0110","0111"},
+    				             {"1111","1110","1101","1100","1011","1010","1001","1000"}};
+    					// A    B    D
+    static String[] aa = {"00","01","10"};
     
     
     
 	GeneradorDeCodigoMaquina(String direccion, Tabop t, TablaSimbolos tabsim, DefaultTableModel inst, DefaultTableModel errores) throws IOException{
 		this.direccion = direccion.replace(".asm", ".inst");
 		this.inst = inst;
+		diferencias = 0;
 		ts = tabsim;
 		ts.mostrarTabsim();
 		temporal = new File("temporal.inst");
@@ -47,137 +52,329 @@ class GeneradorDeCodigoMaquina {
         pw.println(".......................................................................................................");
 	}
 	
-	private void inicializarLinea(){
-		 nolinea = null;
-		 contador = null;
-		 etiqueta = null;
-		 codop = null;
-		 directiva = null;
-		 operando = null;
-		 modo = null;
-		 codigomaquina = null;
-	}
-	
 	
 	public void generarCodigo() throws IOException{
 		String linea;
-		StringTokenizer separador;
-		String cod;
 		Boolean banderaError = new Boolean(true);
 		int i = 0;
 		while((linea = br.readLine()) != null){
 			if(i>1){
 				banderaError = true;
-				inicializarLinea();	
-				separador = new StringTokenizer(linea);
-				nolinea = new Integer(separador.nextToken());
-			    contador = separador.nextToken();
-			    etiqueta =  separador.nextToken();
-			    
-			    cod = separador.nextToken();
-			    directiva = new Directivas(cod);
-			    if(directiva.regresarDirectiva() == -1)
-			    	codop = tabop.busqueda(cod);
-			    
-			    operando = separador.nextToken();
-			    if(directiva.regresarDirectiva() == -1)
-			    	modo = codop.regresarModo(separador.nextToken());
-			    else modo = null;
-			    
-			    if(modo != null){
-			    	if(modo.regresarModo().compareTo("INH") == 0)
-			    		banderaError = generarINH();
-				    else if(modo.regresarModo().compareTo("DIR") == 0)
-				    	banderaError = generarDIR();
-				    else if(modo.regresarModo().compareTo("EXT") == 0)
-				    	banderaError = generarEXT();
-				    else if(modo.regresarModo().compareTo("IMM8") == 0 || modo.regresarModo().compareTo("IMM16") == 0)
-				    	banderaError = generarIMM();
+				Linea nueva = new Linea(linea,tabop,ts);
+				
+				if(diferencias > 0){
+					nueva.asignarContador(Integer.parseInt(nueva.regresarContador(),16)-diferencias);
+				}
+				
+			    if(nueva.regresarModo() != null){
+			    	if(nueva.regresarModo().regresarModo().compareTo("INH") == 0 || nueva.regresarModo().regresarModo().compareTo("IMM") == 0)
+			    		banderaError = generarINHoIMM(nueva);
+				    else if(nueva.regresarModo().regresarModo().compareTo("DIR") == 0)
+				    	banderaError = generarDIR(nueva);
+				    else if(nueva.regresarModo().regresarModo().compareTo("EXT") == 0)
+				    	banderaError = generarEXT(nueva);
+				    else if(nueva.regresarModo().regresarModo().compareTo("IMM8") == 0 || nueva.regresarModo().regresarModo().compareTo("IMM16") == 0)
+				    	banderaError = generarIMM(nueva);
+				    else if(nueva.regresarModo().regresarModo().compareTo("IDX") == 0)
+				    	banderaError = generarIDX(nueva);
+				    else if(nueva.regresarModo().regresarModo().compareTo("IDX1") == 0)
+				    	banderaError = generarIDX1yIDX2(nueva,1,"0");
+				    else if(nueva.regresarModo().regresarModo().compareTo("IDX2") == 0)
+				    	banderaError = generarIDX1yIDX2(nueva,2,"1");
+				    else if(nueva.regresarModo().regresarModo().compareTo("[IDX2]") == 0)
+				    	banderaError = generarINDIRECTOIDX2(nueva);
+				    else if(nueva.regresarModo().regresarModo().compareTo("[D,IDX]") == 0)
+				    	banderaError = generarDIDX(nueva);
 			    }
 			    if(banderaError)
-			    	resultado();
+			    	archivoinst.add(nueva);
 			    else continue;
 			    
 			}
 			else i++;
 		}
-		
-		cerrarArchivo();
+		this.recalcularContadorDeLocalidades();
+		this.resultado();
+		this.cerrarArchivo();
+		err.cerrarArchivo();
 	}
 	
-	public Boolean generarINH(){
-		codigomaquina = modo.regresarCodigoMaquina();
+	public Boolean generarINHoIMM(Linea linea){
+		linea.asignarCodigoMaquina(linea.regresarModo().regresarCodigoMaquina());
 		return true;
 	}
 	
-	public Boolean generarDIR(){
+	public Boolean generarDIR(Linea linea){
 		try{
-			Integer nodecimal = Automata.cambiarABaseDecimal(operando);
-			codigomaquina = modo.regresarCodigoMaquina();
-			codigomaquina +=regresarDigitosNecesarios(nodecimal,modo.regresarPorCalcular());
+			Integer nodecimal = Automata.cambiarABaseDecimal(linea.regresarOperando());
+			String codigomaquina = linea.regresarModo().regresarCodigoMaquina();
+			codigomaquina +=regresarDigitosNecesarios(nodecimal,linea.regresarModo().regresarPorCalcular());
+			linea.asignarCodigoMaquina(codigomaquina);
 			return true;
 		}catch(Exception e){return false;}
 	}
 	
-	public Boolean generarEXT(){
+	public Boolean generarEXT(Linea linea){
+		String codigomaquina = linea.regresarModo().regresarCodigoMaquina();
 		try{
-			codigomaquina = modo.regresarCodigoMaquina();
-			Integer nodecimal = Automata.cambiarABaseDecimal(operando);
-			codigomaquina +=regresarDigitosNecesarios(nodecimal,modo.regresarPorCalcular());
+			
+			Integer nodecimal = Automata.cambiarABaseDecimal(linea.regresarOperando());
+			codigomaquina +=regresarDigitosNecesarios(nodecimal,linea.regresarModo().regresarPorCalcular());
+			linea.asignarCodigoMaquina(codigomaquina);
 			return true;
 			
 		}catch(Exception e){
-			String conloc = ts.regresarConloc(operando);
+			String conloc = ts.regresarConloc(linea.regresarOperando(),linea.regresarNoLinea());
 			if(conloc != null){
 				codigomaquina += conloc;
+				linea.asignarCodigoMaquina(codigomaquina);
 				return true;
 			}	
 			else {
-				err.resultado(0, 2, nolinea);
+				
+				err.resultado(0, 2, linea.nolinea);
+				desaparecerLinea(linea);
 				return false;
 			}
 			
 		}
 	}
 	
-	public Boolean generarIMM(){
+	public Boolean generarIMM(Linea linea){
 		try{
-			Integer nodecimal = Automata.cambiarABaseDecimal(operando.substring(1));
-			codigomaquina = modo.regresarCodigoMaquina();
-			codigomaquina +=regresarDigitosNecesarios(nodecimal,modo.regresarPorCalcular());
+			Integer nodecimal = Automata.cambiarABaseDecimal(linea.regresarOperando().substring(1));
+			String codigomaquina = linea.regresarModo().regresarCodigoMaquina();
+			codigomaquina +=regresarDigitosNecesarios(nodecimal,linea.regresarModo().regresarPorCalcular());
+			linea.asignarCodigoMaquina(codigomaquina);
 			return true;
 		}catch(Exception e){return false;}
 	}
 	
-	public void resultado() {
+	public Boolean generarIDX(Linea linea){
+		String codigomaquina = linea.regresarModo().regresarCodigoMaquina();
+		StringTokenizer idx;
+		String acumulador;
+		String registro;
+		String nohexa = null;
 
-		Object[] fila = new Object[7];
-		fila[0]=nolinea; 
-		fila[1]=contador;
-		fila[2]=etiqueta;
-		if(codop != null)fila[3]=codop.regresarInstruccion();
-		else fila[3]=directiva.regresarNombreDirectiva();
-		fila[4]=operando;
-		if(modo != null)fila[5]=modo.regresarModo();
-		else fila[5]= null;
-		fila[6]=codigomaquina;
-		
-		inst.addRow(fila);
-		pw.println(String.format("%-8s  %-10s  %-10s  %-10s  %-20s %-10s %s",fila));
+		if(linea.operando.matches("[A|B|C|D][,][A-Za-z]+")){
+			String xb = "111rr1aa";
+			idx = new StringTokenizer(linea.operando,",");
+			acumulador = this.numeroAcumulador(idx.nextToken());
+			registro = this.numeroDeRegistro(idx.nextToken());
 			
+			xb = xb.replace("rr", registro);
+			xb = xb.replace("aa", acumulador);
+			xb = this.regresarDigitosNecesarios(Integer.parseInt(xb,2),1);
+			codigomaquina+=xb;
+			linea.asignarCodigoMaquina(codigomaquina);
+			return true;	
+		}
+		
+		else if(linea.operando.matches("[$]?[@]?[%]?[-]?[A-Za-z0-9]*[,][A-Za-z]+")){
+			
+			String xb = "rr0nnnnn";
+			if(linea.operando.charAt(0)==','){
+				xb = xb.replace("nnnnn", "00000");
+				xb = xb.replace("rr", this.numeroDeRegistro(linea.operando.substring(1)));
+			}
+			else{
+				idx = new StringTokenizer(linea.operando,",");
+				try {
+					nohexa = this.regresarDigitoBinariosNecesarios(Automata.cambiarABaseDecimal(idx.nextToken()),5);
+				} catch (Exception e){
+					e.printStackTrace();
+				}
+				registro = numeroDeRegistro(idx.nextToken());
+				xb = xb.replace("rr", registro);
+				xb = xb.replace("nnnnn", nohexa);
+				
+			}	
+			xb = this.regresarDigitosNecesarios(Integer.parseInt(xb,2),1);
+			codigomaquina+=xb;
+			linea.asignarCodigoMaquina(codigomaquina);
+			return true;
+
+		}
+		
+		else if(linea.operando.matches("[$]?[@]?[%]?[-]?[A-Z0-9]+[,][+|-][A-Za-z]+")){
+			
+			String xb = "rr10nnnn";
+			idx = new StringTokenizer(linea.operando,",");
+			Integer nodecimal = null;
+			try {
+				nodecimal = Automata.cambiarABaseDecimal(idx.nextToken());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			registro = idx.nextToken();
+			registro = this.numeroDeRegistro(registro.substring(1));
+			
+			if(nodecimal > 0)xb = xb.replace("nnnn", prepost[0][nodecimal-1]);
+			else xb = xb.replace("nnnn", prepost[1][(nodecimal*-1)-1]);
+			
+			xb = xb.replace("rr", registro);
+			xb = this.regresarDigitosNecesarios(Integer.parseInt(xb,2),1);
+			codigomaquina+=xb;
+			linea.asignarCodigoMaquina(codigomaquina);
+			return true;
+	
+
+		}// fin del pre
+		
+		else if(linea.operando.matches("[$]?[@]?[%]?[-]?[A-Z0-9]+[,][A-Za-z]+[+|-]")){
+			String xb = "rr11nnnn";
+			idx = new StringTokenizer(linea.operando,",");
+			Integer nodecimal = null;
+			try {
+				nodecimal = Automata.cambiarABaseDecimal(idx.nextToken());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			registro = idx.nextToken();
+			registro = this.numeroDeRegistro(registro.substring(0,registro.length()-1));
+			
+			if(nodecimal > 0)xb = xb.replace("nnnn", prepost[0][nodecimal-1]);
+			else xb = xb.replace("nnnn", prepost[1][(nodecimal*-1)-1]);
+			
+			xb = xb.replace("rr", registro);
+			xb = this.regresarDigitosNecesarios(Integer.parseInt(xb,2),1);
+			codigomaquina+=xb;
+			linea.asignarCodigoMaquina(codigomaquina);
+			return true;
+	
+		}// fin del post
+		
+		else return false;
+	}
+	
+	public Boolean generarIDX1yIDX2(Linea linea,Integer bytes,String z){
+		
+		String codigomaquina = linea.regresarModo().regresarCodigoMaquina();
+		StringTokenizer idx;
+		String registro;
+		String xb = "111rr0zs";
+		Integer decimal = null;
+		
+		xb = xb.replace("z",z);
+		idx = new StringTokenizer(linea.operando,",");
+		try {
+			decimal = Automata.cambiarABaseDecimal(idx.nextToken());
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+		registro = numeroDeRegistro(idx.nextToken());
+		xb = xb.replace("rr", registro);
+		if(decimal >= 0) xb = xb.replace("s", "0");
+		else xb = xb.replace("s", "1");
+		
+		xb = this.regresarDigitosNecesarios(Integer.parseInt(xb,2),1);
+		codigomaquina= codigomaquina + xb + this.regresarDigitosNecesarios(decimal, bytes);
+		linea.asignarCodigoMaquina(codigomaquina);
+		return true;
+
+	}
+	
+	public Boolean generarINDIRECTOIDX2(Linea linea){
+		String codigomaquina = linea.regresarModo().regresarCodigoMaquina();
+		StringTokenizer idx;
+		String registro;
+		String xb = "111rr011";
+		String auxoper = linea.operando.substring(1, linea.operando.length()-1);
+		Integer decimal = null;
+		
+		idx = new StringTokenizer(auxoper,",");
+		try {
+			decimal = Automata.cambiarABaseDecimal(idx.nextToken());
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+		registro = numeroDeRegistro(idx.nextToken());
+		xb = xb.replace("rr", registro);
+		
+		xb = this.regresarDigitosNecesarios(Integer.parseInt(xb,2),1);
+		codigomaquina= codigomaquina + xb + this.regresarDigitosNecesarios(decimal, 2);
+		linea.asignarCodigoMaquina(codigomaquina);
+		return true;
+	}
+	
+	public Boolean generarDIDX(Linea linea){
+		String codigomaquina = linea.regresarModo().regresarCodigoMaquina();
+		StringTokenizer idx;
+		String registro;
+		String xb = "111rr111";
+		String auxoper = linea.operando.substring(1, linea.operando.length()-1);
+		
+		idx = new StringTokenizer(auxoper,",");
+		registro = idx.nextToken();
+		registro = numeroDeRegistro(idx.nextToken());
+		xb = xb.replace("rr", registro);
+		 	
+		xb = this.regresarDigitosNecesarios(Integer.parseInt(xb,2),1);
+		codigomaquina= codigomaquina + xb;
+		linea.asignarCodigoMaquina(codigomaquina);
+		return true;
+	}
+	
+
+	
+	public void resultado() {
+		
+		Iterator<Linea> iterador = archivoinst.iterator();
+		
+		while(iterador.hasNext()){
+			Linea aux = iterador.next();
+			Object[] fila = new Object[7];
+			
+			fila[0]=aux.nolinea; 
+			fila[1]=aux.contador.toUpperCase();
+			
+			if(aux.etiqueta != null)fila[2]=aux.etiqueta.regresarNombre();
+			else fila[2] = null;
+			
+			if(aux.codop != null)fila[3]=aux.codop.regresarInstruccion();
+			else fila[3]=aux.directiva.regresarNombreDirectiva();
+			
+			fila[4]=aux.operando;
+			
+			if(aux.modo != null)fila[5]=aux.modo.regresarModo();
+			else fila[5]= null;
+			
+			if(aux.codigomaquina != null)fila[6]=aux.codigomaquina.toUpperCase();
+			else fila[6]= null;
+			
+			inst.addRow(fila);
+			pw.println(String.format("%-8s  %-10s  %-10s  %-10s  %-20s %-10s %s",fila));
+		
+		}
+				
 	}
 	
 	public String regresarDigitosNecesarios(Integer decimal, Integer bytes){
 		
 		String hexa = Integer.toHexString(decimal);
 		if(hexa.length() > bytes * 2){
-			return hexa.substring(hexa.length() - bytes * 2);
+			return hexa.substring(hexa.length() - bytes *2);
 		}
 		else{
-			while(hexa.length() < bytes * 2){
+			while(hexa.length() < bytes *2){
 				hexa = '0' + hexa;
 			}
 			return hexa;
+		}			
+	}
+	
+	public String regresarDigitoBinariosNecesarios(Integer decimal, Integer bytes){
+		
+		String bin = Integer.toBinaryString(decimal);
+		if(bin.length() > bytes){
+			return bin.substring(bin.length() - bytes);
+		}
+		else{
+			while(bin.length() < bytes){
+				bin = '0' + bin;
+			}
+			return bin;
 		}			
 	}
 	
@@ -188,6 +385,75 @@ class GeneradorDeCodigoMaquina {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void desaparecerLinea(Linea linea){
+		Etiqueta e = linea.regresarEtiqueta();
+		Linea aux;
+		if(e != null){
+			ArrayList<Integer> listaLineas = e.regresarOperandos();
+			
+			for(int i=0;i < archivoinst.size();i++){
+				aux = archivoinst.get(i);
+				if(!listaLineas.isEmpty() && aux.regresarNoLinea().compareTo(listaLineas.get(0))==0){
+					desaparecerLinea(aux);
+					archivoinst.remove(aux);
+					err.DescripcionError(aux.regresarOriginal());			
+					listaLineas.remove(0);
+				}		
+			}
+			ts.eliminarEtiqueta(linea.etiqueta);
+			ts.sobreescribirTDS();
+		}
+		
+	}
+	
+	
+	void recalcularContadorDeLocalidades(){
+		Iterator<Linea> iterador = archivoinst.iterator();
+		ContadorDeLocalidades c = new ContadorDeLocalidades();
+		
+		while(iterador.hasNext()){
+			Linea aux = iterador.next();
+			
+			if(aux.codop != null){
+				aux.contador = c.regresarContadorORGHexa();
+				c.bytesPorIncrementar(aux.modo.regresarSumaTotal());
+			}
+			else{
+				if(aux.directiva.regresarDirectiva() != 29){
+					Automata.analizar(aux.operando, err, aux.directiva, 0, c);
+				}
+				if(c.banderaEQU(aux.directiva.regresarDirectiva())){
+					try {
+						c.asignarContadorEQU(Automata.cambiarABaseDecimal(aux.operando));
+						aux.contador = c.regresarContadorEQUHexa();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				else{
+					aux.contador = c.regresarContadorORGHexa();
+				}
+			}
+			c.incrementarContador();
+		
+		}
+	}
+	
+	String numeroDeRegistro(String registro){
+		if(registro.equalsIgnoreCase("X"))return rr[0];
+		else if(registro.equalsIgnoreCase("Y"))return rr[1];
+		else if(registro.equalsIgnoreCase("SP"))return rr[2];
+		else if(registro.equalsIgnoreCase("PC"))return rr[3];
+		else return null;
+	}
+	
+	String numeroAcumulador(String acumulador){
+		if(acumulador.equalsIgnoreCase("A"))return aa[0];
+		else if(acumulador.equalsIgnoreCase("B"))return aa[1];
+		else if(acumulador.equalsIgnoreCase("D"))return aa[2];
+		else return null;
 	}
 	
 }
