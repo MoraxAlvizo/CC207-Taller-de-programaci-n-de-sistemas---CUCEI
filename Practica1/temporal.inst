@@ -1,21 +1,18 @@
 LINEA     CONTLOC     ETIQUETA    CODOP       OPERANDO             MODO
 .......................................................................................
-4         0000        NULL        ORG         0                    null
-5         0003        EN3         EQU         3                    null
-11        0000        NULL        DW          2                    null
-12        0002        NULL        DB          2                    null
-13        0003        NULL        DC.W        2                    null
-14        0005        NULL        DC.B        2                    null
-15        0006        e1          FCB         2                    null
-16        0007        NULL        FDB         2222                 null
-17        0009        NULL        DS          34                   null
-18        002b        NULL        DS.B        34                   null
-19        004d        NULL        DS.W        34                   null
-20        0091        e2          RMB         34                   null
-21        00b3        NULL        RMW         34                   null
-22        00f7        NULL        FCC         "HOLA MUNDO"         null
-26        0101        NULL        rmw         @500                 null
-27        0381        e3          SWI         NULL                 INH
-37        0382        e4          ADCA        $3                   DIR
-41        0002        EN5         EQU         2                    null
-42        0384        EN4         END         NULL                 null
+1         0017        NULL        ORG         $17                  null
+2         0030        UNO         EQU         $30                  null
+3         0050        DOS         EQU         $50                  null
+4         0017        NULL        LBRA        SIETE                REL16
+5         001b        NULL        BRA         UNO                  REL8
+6         001d        NULL        LBRA        DOS                  REL16
+7         0021        NULL        BCS         SEIS                 REL8
+8         0023        SIETE       BCS         SEIS                 REL8
+9         0025        NULL        LBCS        TRES                 REL16
+10        0029        TRES        BCS         DOS                  REL8
+11        002b        CUATRO      SWI         NULL                 INH
+12        002c        NULL        DS          10                   null
+13        0036        SEIS        BRA         CINCO                REL8
+14        0038        NULL        DS          4096                 null
+15        1038        NULL        LBRA        DOS                  REL16
+16        103c        NULL        END         NULL                 null

@@ -56,14 +56,21 @@ class GeneradorDeCodigoMaquina {
 	public void generarCodigo() throws IOException{
 		String linea;
 		Boolean banderaError = new Boolean(true);
+		Linea banderaREL = null;
 		int i = 0;
+		
 		while((linea = br.readLine()) != null){
 			if(i>1){
 				banderaError = true;
 				Linea nueva = new Linea(linea,tabop,ts);
 				
-				if(diferencias > 0){
-					nueva.asignarContador(Integer.parseInt(nueva.regresarContador(),16)-diferencias);
+				if(banderaREL!=null){
+					banderaError = generarREL(banderaREL,Integer.parseInt(nueva.regresarContador(),16));
+					if(!banderaError){
+						archivoinst.remove(banderaREL);
+						banderaError = true;
+					}
+					banderaREL = null;
 				}
 				
 			    if(nueva.regresarModo() != null){
@@ -85,6 +92,8 @@ class GeneradorDeCodigoMaquina {
 				    	banderaError = generarINDIRECTOIDX2(nueva);
 				    else if(nueva.regresarModo().regresarModo().compareTo("[D,IDX]") == 0)
 				    	banderaError = generarDIDX(nueva);
+				    else if(nueva.regresarModo().regresarModo().compareTo("REL8")==0 || nueva.regresarModo().regresarModo().compareTo("REL16")==0)
+				    	banderaREL = nueva;
 			    }
 			    if(banderaError)
 			    	archivoinst.add(nueva);
@@ -93,7 +102,6 @@ class GeneradorDeCodigoMaquina {
 			}
 			else i++;
 		}
-		this.recalcularContadorDeLocalidades();
 		this.resultado();
 		this.cerrarArchivo();
 		err.cerrarArchivo();
@@ -134,6 +142,7 @@ class GeneradorDeCodigoMaquina {
 				
 				err.resultado(0, 2, linea.nolinea);
 				desaparecerLinea(linea);
+				this.recalcularContadorDeLocalidades();
 				return false;
 			}
 			
@@ -316,6 +325,53 @@ class GeneradorDeCodigoMaquina {
 		return true;
 	}
 	
+	public Boolean generarREL(Linea linea,Integer conlocSiguiente){
+		String codigomaquina = linea.regresarModo().regresarCodigoMaquina();
+		Integer salto;
+		try{
+			Integer nodecimal = Automata.cambiarABaseDecimal(linea.regresarOperando());
+			salto = nodecimal - conlocSiguiente;
+			
+		}catch(Exception e){
+			String conloc = ts.regresarConloc(linea.regresarOperando(),linea.regresarNoLinea());
+			if(conloc != null){
+				salto = Integer.parseInt(conloc,16) - conlocSiguiente;
+			}	
+			else {
+				err.resultado(0, 2, linea.nolinea);
+				desaparecerLinea(linea);
+				this.recalcularContadorDeLocalidades();
+				return false;
+			}
+			
+		}
+		
+		if(linea.modo.regresarModo().compareTo("REL8") == 0){
+			if(Automata.validarNumero(salto, 2, 128, -127)){
+				codigomaquina +=regresarDigitosNecesarios(salto,linea.modo.regresarPorCalcular());
+			}
+			else{
+				err.resultado(0, 2, linea.nolinea);
+				desaparecerLinea(linea);
+				this.recalcularContadorDeLocalidades();
+				return false;
+			}
+		}
+		
+		else{
+			if(Automata.validarNumero(salto, 2,32767, -32768)){
+				codigomaquina +=regresarDigitosNecesarios(salto,linea.modo.regresarPorCalcular());
+			}
+			else{
+				err.resultado(0, 2, linea.nolinea);
+				desaparecerLinea(linea);
+				return false;
+			}
+		}
+		
+		linea.asignarCodigoMaquina(codigomaquina);
+		return true;
+	}
 
 	
 	public void resultado() {
@@ -400,6 +456,7 @@ class GeneradorDeCodigoMaquina {
 					archivoinst.remove(aux);
 					err.DescripcionError(aux.regresarOriginal());			
 					listaLineas.remove(0);
+					i-=2;
 				}		
 			}
 			ts.eliminarEtiqueta(linea.etiqueta);
@@ -436,10 +493,38 @@ class GeneradorDeCodigoMaquina {
 					aux.contador = c.regresarContadorORGHexa();
 				}
 			}
+			aux.actualizarEtiqueta();
 			c.incrementarContador();
+		}
+		recalcularSaltos();
+		ts.sobreescribirTDS();
+	}	
+	void recalcularSaltos(){
+		Iterator<Linea> iterador = archivoinst.iterator();
+		Linea banderaREL = null;
+		Boolean banderaError = true;
+		Linea aux;
 		
+		while(iterador.hasNext()){
+			aux = iterador.next();
+			if(aux.codop != null){
+
+				if(banderaREL!=null){
+					banderaError = generarREL(banderaREL,Integer.parseInt(aux.regresarContador(),16));
+					if(!banderaError){
+						archivoinst.remove(banderaREL);
+						banderaError = true;
+					}
+					banderaREL = null;
+				}
+				
+				if(aux.regresarModo().regresarModo().compareTo("REL8")==0 || aux.regresarModo().regresarModo().compareTo("REL16")==0)
+			    	banderaREL = aux;
+			}
+			
 		}
 	}
+
 	
 	String numeroDeRegistro(String registro){
 		if(registro.equalsIgnoreCase("X"))return rr[0];

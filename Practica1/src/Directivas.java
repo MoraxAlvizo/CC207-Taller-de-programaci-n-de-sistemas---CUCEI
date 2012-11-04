@@ -227,7 +227,7 @@ class Directivas {
 		
 		try {
 			int nodecimal = Automata.cambiarABaseDecimal(operando);
-			if(Automata.validarNumero(nodecimal,16,255,0)){
+			if(Automata.validarNumero(nodecimal,16,65535,0)){
 				c.bytesPorIncrementar(nodecimal);
 				return true;
 			}

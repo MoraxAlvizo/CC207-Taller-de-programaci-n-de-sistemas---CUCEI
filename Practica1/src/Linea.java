@@ -83,5 +83,9 @@ class Linea {
 		return directiva.regresarDirectiva();
 	}
     
+	void actualizarEtiqueta(){
+		if(etiqueta != null)
+			etiqueta.actualizarConloc(this.contador);
+	}
     
 }

@@ -107,6 +107,8 @@ class TablaSimbolos {
     }
     
     public void sobreescribirTDS(){
+    	Object[] fila = new Object[2];
+		
         try {
 			fw = new FileWriter(direccion, false);
 		} catch (IOException e) {
@@ -116,8 +118,12 @@ class TablaSimbolos {
         pw.println(String.format("%-8s  %s","ETIQUETA","VALOR"));
         pw.println("........................:...........");
         Iterator<Etiqueta> i =  listaEtiquetas.iterator();	
+        vaciarTS();
     	while(i.hasNext()){
     		Etiqueta aux = i.next();
+       		fila[0]=aux.nombre;
+    		fila[1]=aux.conloc;
+       		tabsim.addRow(fila);
     		pw.println(String.format("%-8s  %s",aux.nombre,aux.conloc));
     	}
     		
@@ -127,4 +133,9 @@ class TablaSimbolos {
 		} catch (IOException e) {}
     }
 	
+    void vaciarTS(){
+    	while(tabsim.getRowCount() != 0){
+    		tabsim.removeRow(0);
+    	}
+    }
 }

@@ -21,6 +21,10 @@ class Etiqueta {
 		return nombre;
 	}
 	
+	void actualizarConloc(String conloc){
+		this.conloc = conloc;
+	}
+	
 	void agregarOperando(Integer linea){
 		operandos.add(linea);
 	}
