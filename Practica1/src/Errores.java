@@ -38,7 +38,7 @@ public class Errores {
 		this.err = err;
 		
 		banderaError = false;
-		errores = new String [12][3];
+		errores = new String [13][3];
 		
 		//ERRORES DE ETIQUETA
 		errores [0][0]= new String("ERROR: lexicografico en Etiqueta");
@@ -87,6 +87,9 @@ public class Errores {
 		errores [11][0]= new String("ERROR: ya existe un ORG");
 		errores [11][1]= new String("ERROR: ya existe la ETIQUETA en la tabla de simbolos");
 		errores [11][2]= new String("ERROR: todas las directivas deben de llevar operando");
+		
+		//ERROR REL'S
+		errores [12][0]= new String("ERROR: Salto fuera de rango para el rel");
 	}
 	
 	/**

@@ -351,7 +351,7 @@ class GeneradorDeCodigoMaquina {
 				codigomaquina +=regresarDigitosNecesarios(salto,linea.modo.regresarPorCalcular());
 			}
 			else{
-				err.resultado(0, 2, linea.nolinea);
+				err.resultado(12, 0, linea.nolinea);
 				desaparecerLinea(linea);
 				this.recalcularContadorDeLocalidades();
 				return false;
@@ -363,8 +363,9 @@ class GeneradorDeCodigoMaquina {
 				codigomaquina +=regresarDigitosNecesarios(salto,linea.modo.regresarPorCalcular());
 			}
 			else{
-				err.resultado(0, 2, linea.nolinea);
+				err.resultado(12, 0, linea.nolinea);
 				desaparecerLinea(linea);
+				this.recalcularContadorDeLocalidades();
 				return false;
 			}
 		}
