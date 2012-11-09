@@ -56,23 +56,13 @@ class GeneradorDeCodigoMaquina {
 	public void generarCodigo() throws IOException{
 		String linea;
 		Boolean banderaError = new Boolean(true);
-		Linea banderaREL = null;
 		int i = 0;
 		
 		while((linea = br.readLine()) != null){
 			if(i>1){
 				banderaError = true;
 				Linea nueva = new Linea(linea,tabop,ts);
-				
-				if(banderaREL!=null){
-					banderaError = generarREL(banderaREL,Integer.parseInt(nueva.regresarContador(),16));
-					if(!banderaError){
-						archivoinst.remove(banderaREL);
-						banderaError = true;
-					}
-					banderaREL = null;
-				}
-				
+
 			    if(nueva.regresarModo() != null){
 			    	if(nueva.regresarModo().regresarModo().compareTo("INH") == 0 || nueva.regresarModo().regresarModo().compareTo("IMM") == 0)
 			    		banderaError = generarINHoIMM(nueva);
@@ -93,7 +83,7 @@ class GeneradorDeCodigoMaquina {
 				    else if(nueva.regresarModo().regresarModo().compareTo("[D,IDX]") == 0)
 				    	banderaError = generarDIDX(nueva);
 				    else if(nueva.regresarModo().regresarModo().compareTo("REL8")==0 || nueva.regresarModo().regresarModo().compareTo("REL16")==0)
-				    	banderaREL = nueva;
+				    	banderaError = generarREL(nueva,Integer.parseInt(nueva.regresarContador(),16)+nueva.modo.regresarSumaTotal());
 			    }
 			    if(banderaError)
 			    	archivoinst.add(nueva);
@@ -219,8 +209,8 @@ class GeneradorDeCodigoMaquina {
 			registro = idx.nextToken();
 			registro = this.numeroDeRegistro(registro.substring(1));
 			
-			if(nodecimal > 0)xb = xb.replace("nnnn", prepost[0][nodecimal-1]);
-			else xb = xb.replace("nnnn", prepost[1][(nodecimal*-1)-1]);
+			if(registro.charAt(0) == '+')xb = xb.replace("nnnn", prepost[0][nodecimal-1]);
+			else xb = xb.replace("nnnn", prepost[1][nodecimal-1]);
 			
 			xb = xb.replace("rr", registro);
 			xb = this.regresarDigitosNecesarios(Integer.parseInt(xb,2),1);
@@ -243,8 +233,8 @@ class GeneradorDeCodigoMaquina {
 			registro = idx.nextToken();
 			registro = this.numeroDeRegistro(registro.substring(0,registro.length()-1));
 			
-			if(nodecimal > 0)xb = xb.replace("nnnn", prepost[0][nodecimal-1]);
-			else xb = xb.replace("nnnn", prepost[1][(nodecimal*-1)-1]);
+			if(registro.endsWith("+"))xb = xb.replace("nnnn", prepost[0][nodecimal-1]);
+			else xb = xb.replace("nnnn", prepost[1][nodecimal-1]);
 			
 			xb = xb.replace("rr", registro);
 			xb = this.regresarDigitosNecesarios(Integer.parseInt(xb,2),1);
@@ -502,25 +492,13 @@ class GeneradorDeCodigoMaquina {
 	}	
 	void recalcularSaltos(){
 		Iterator<Linea> iterador = archivoinst.iterator();
-		Linea banderaREL = null;
-		Boolean banderaError = true;
 		Linea aux;
 		
 		while(iterador.hasNext()){
 			aux = iterador.next();
-			if(aux.codop != null){
-
-				if(banderaREL!=null){
-					banderaError = generarREL(banderaREL,Integer.parseInt(aux.regresarContador(),16));
-					if(!banderaError){
-						archivoinst.remove(banderaREL);
-						banderaError = true;
-					}
-					banderaREL = null;
-				}
-				
+			if(aux.codop != null){			
 				if(aux.regresarModo().regresarModo().compareTo("REL8")==0 || aux.regresarModo().regresarModo().compareTo("REL16")==0)
-			    	banderaREL = aux;
+					generarREL(aux,Integer.parseInt(aux.regresarContador(),16)+aux.modo.regresarSumaTotal());
 			}
 			
 		}
