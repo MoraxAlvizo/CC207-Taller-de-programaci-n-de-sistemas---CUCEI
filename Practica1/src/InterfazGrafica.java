@@ -140,7 +140,7 @@ public class InterfazGrafica extends JFrame {
 		setBackground(SystemColor.windowText);
 		setTitle("CC207 TALLER PROGRAMACION DE SISTEMAS Practica 2");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 932, 574);
+		setBounds(100, 100, 1100, 574);
 		
 		
 		final JFileChooser fc = new JFileChooser();
@@ -163,7 +163,7 @@ public class InterfazGrafica extends JFrame {
 		panelConFichas.setTabPlacement(JTabbedPane.BOTTOM);
 		panelConFichas.setBackground(Color.darkGray);
 		panelConFichas.setForeground(Color.white);
-		panelConFichas.setBounds(470, 70, 450, 300);
+		panelConFichas.setBounds(470, 70, 618, 300);
 		contentPane.add(panelConFichas);
 		
 		JScrollPane scrollPane = new JScrollPane();
@@ -201,7 +201,7 @@ public class InterfazGrafica extends JFrame {
 		scrollPane_1.setViewportView(table_1);
 		
 		JScrollPane scrollPane_2 = new JScrollPane();
-		scrollPane_2.setBounds(10, 425, 910, 114);
+		scrollPane_2.setBounds(10, 425, 1078, 114);
 		contentPane.add(scrollPane_2);
 
 		scrollPane_2.setViewportView(tabla_errores);
@@ -233,7 +233,7 @@ public class InterfazGrafica extends JFrame {
 		
 			}
 		});
-		btnAnalizar.setBounds(774, 6, 146, 58);
+		btnAnalizar.setBounds(942, 6, 146, 58);
 		contentPane.add(btnAnalizar);
 		
 		JLabel lblArchivoAsm = new JLabel("ASM");
@@ -338,8 +338,8 @@ public class InterfazGrafica extends JFrame {
 		table_1.getColumnModel().getColumn(4).setMaxWidth(200);
 		table_1.getColumnModel().getColumn(4).setPreferredWidth(150);
 		table_1.getColumnModel().getColumn(5).setHeaderRenderer(r);
-		table_1.getColumnModel().getColumn(4).setMaxWidth(100);
-		table_1.getColumnModel().getColumn(4).setPreferredWidth(100);
+		table_1.getColumnModel().getColumn(5).setMaxWidth(60);
+		table_1.getColumnModel().getColumn(5).setPreferredWidth(60);
 		table_1.getColumnModel().getColumn(6).setHeaderRenderer(r);
 		
 		

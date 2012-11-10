@@ -56,6 +56,7 @@ class GeneradorDeCodigoMaquina {
 	public void generarCodigo() throws IOException{
 		String linea;
 		Boolean banderaError = new Boolean(true);
+		Boolean banderaRecalculo = false;
 		int i = 0;
 		
 		while((linea = br.readLine()) != null){
@@ -85,18 +86,70 @@ class GeneradorDeCodigoMaquina {
 				    else if(nueva.regresarModo().regresarModo().compareTo("REL8")==0 || nueva.regresarModo().regresarModo().compareTo("REL16")==0)
 				    	banderaError = generarREL(nueva,Integer.parseInt(nueva.regresarContador(),16)+nueva.modo.regresarSumaTotal());
 			    }
-			    if(banderaError)
+			    
+			    else{
+			    	switch(nueva.regresarDirectiva()){
+			    	
+			    	case 9:case 13:case 17: 
+						banderaError = generarDirectivasConstantes(nueva,1);
+						break;
+					case 8:case 12:case 27: 
+						banderaError = generarDirectivasConstantes(nueva,2);
+						break;
+					case 16:			    
+						banderaError = generarFCC(nueva);					   
+						break;
+			    	}
+			    }
+			    if(banderaError){
 			    	archivoinst.add(nueva);
+			    	banderaRecalculo = true;
+			    }
+			  	
 			    else continue;
 			    
 			}
 			else i++;
 		}
+		
+		if(banderaRecalculo)this.recalcularContadorDeLocalidades();
 		this.resultado();
 		this.cerrarArchivo();
 		err.cerrarArchivo();
 	}
 	
+	private Boolean generarFCC(Linea linea) {
+		int estado=0;
+		String codigomaquina="";
+							// "  ASCII
+		int automataFCC[][]= {{ 1,-1,-1}, //0
+							  { 2, 1,-1}, //1
+							  {-1,-1,-1}};//2
+		
+		for(char aux:linea.regresarOperando().toCharArray()){
+				
+			if(aux=='\"')							 estado = automataFCC[estado][0];
+			else if((int)aux>=32 && (int)aux <= 127){estado = automataFCC[estado][1];
+													 codigomaquina+=Integer.toHexString((int)aux).toUpperCase();}
+			else								     estado = automataFCC[estado][2];
+				
+		}
+		linea.asignarCodigoMaquina(codigomaquina);
+		return true;
+	}
+
+
+
+	private Boolean generarDirectivasConstantes(Linea linea,Integer bytes) {
+		try{
+			Integer nodecimal = Automata.cambiarABaseDecimal(linea.regresarOperando());
+			String codigomaquina = regresarDigitosNecesarios(nodecimal,bytes);
+			linea.asignarCodigoMaquina(codigomaquina);
+			return true;
+		}catch(Exception e){return false;}
+	}
+
+
 	public Boolean generarINHoIMM(Linea linea){
 		linea.asignarCodigoMaquina(linea.regresarModo().regresarCodigoMaquina());
 		return true;
@@ -129,10 +182,8 @@ class GeneradorDeCodigoMaquina {
 				return true;
 			}	
 			else {
-				
 				err.resultado(0, 2, linea.nolinea);
 				desaparecerLinea(linea);
-				this.recalcularContadorDeLocalidades();
 				return false;
 			}
 			
@@ -330,7 +381,6 @@ class GeneradorDeCodigoMaquina {
 			else {
 				err.resultado(0, 2, linea.nolinea);
 				desaparecerLinea(linea);
-				this.recalcularContadorDeLocalidades();
 				return false;
 			}
 			
@@ -343,7 +393,6 @@ class GeneradorDeCodigoMaquina {
 			else{
 				err.resultado(12, 0, linea.nolinea);
 				desaparecerLinea(linea);
-				this.recalcularContadorDeLocalidades();
 				return false;
 			}
 		}
@@ -355,7 +404,6 @@ class GeneradorDeCodigoMaquina {
 			else{
 				err.resultado(12, 0, linea.nolinea);
 				desaparecerLinea(linea);
-				this.recalcularContadorDeLocalidades();
 				return false;
 			}
 		}
@@ -460,7 +508,6 @@ class GeneradorDeCodigoMaquina {
 	void recalcularContadorDeLocalidades(){
 		Iterator<Linea> iterador = archivoinst.iterator();
 		ContadorDeLocalidades c = new ContadorDeLocalidades();
-		
 		while(iterador.hasNext()){
 			Linea aux = iterador.next();
 			
@@ -472,6 +519,7 @@ class GeneradorDeCodigoMaquina {
 				if(aux.directiva.regresarDirectiva() != 29){
 					Automata.analizar(aux.operando, err, aux.directiva, 0, c);
 				}
+				
 				if(c.banderaEQU(aux.directiva.regresarDirectiva())){
 					try {
 						c.asignarContadorEQU(Automata.cambiarABaseDecimal(aux.operando));
@@ -483,10 +531,12 @@ class GeneradorDeCodigoMaquina {
 				else{
 					aux.contador = c.regresarContadorORGHexa();
 				}
+				
 			}
 			aux.actualizarEtiqueta();
 			c.incrementarContador();
 		}
+
 		recalcularSaltos();
 		ts.sobreescribirTDS();
 	}	

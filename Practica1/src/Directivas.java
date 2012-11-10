@@ -259,4 +259,9 @@ class Directivas {
 		}
 	}
 	
+	Boolean validarEND(String operando,Errores err, int linea, ContadorDeLocalidades c){
+		
+		return true;
+	}
+	
 }
