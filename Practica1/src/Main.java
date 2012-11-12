@@ -29,6 +29,10 @@ public class Main{
 				}
 			}
 		});
+		/*
+		for(int i=0;i<255;i++){
+			System.out.println("caracter : "+(char)i+" ASCII: "+i);
+		}*/
 		
 	}
 	

@@ -13,14 +13,16 @@ import javax.swing.table.DefaultTableModel;
  */
 public class AnalizarArchivo {
 
-	/** El archivo. ruta del archivo a analizar */
-	RandomAccessFile archivo = null;
     
     /** El interprete. Atributo que analizara linea por linea */
     InterpretarLinea interprete;
     
     /** El direccion. nombre de la direccion */
     String direccion;
+    
+    File archivo;
+    FileReader fr;
+    BufferedReader br;
    
 
     /**
@@ -42,8 +44,10 @@ public class AnalizarArchivo {
      * @throws IOException Signals that an I/O exception has occurred.
      */
     void abrirArchivo(File direccion) throws IOException{
-    	this.direccion=direccion.getAbsolutePath(); 
-    	archivo = new RandomAccessFile(direccion, "r");	   
+    	this.direccion=direccion.getAbsolutePath();
+    	archivo = direccion;
+        fr = new FileReader (archivo);
+        br = new BufferedReader(fr);	   
     }// fin del metodo
     
     /**
@@ -55,12 +59,11 @@ public class AnalizarArchivo {
     void leerArchivo(JTextArea a)throws IOException{
     	String linea;
     	int contador=0;
-    	while((linea=archivo.readLine())!=null){
+    	while((linea=br.readLine())!=null){
     		contador++;
     		a.append(contador + "\t"+linea+"\n");
     	}	
-    	archivo.seek(0);
-  
+    	br.close();
     }
     
     /**
@@ -76,11 +79,14 @@ public class AnalizarArchivo {
     	int contador=0;
     	boolean banderaEND = false;
     	Errores err;
-    	
+    	archivo = new File(direccion);
+        fr = new FileReader (archivo);
+        br = new BufferedReader(fr);
+        
     	if(verificarArchivo())
     	{
     		interprete.crearArchivo(direccion,errores,tabsim);
-    		while((linea=archivo.readLine())!=null){
+    		while((linea=br.readLine())!=null){
         		contador++;
         		
         		if(interprete.analizarLinea(linea,contador)&&!(banderaEND=interprete.validarEND())){
@@ -93,7 +99,7 @@ public class AnalizarArchivo {
         		else continue;
         	}
     		
-    		archivo.close();
+    		br.close();
     		interprete.cerrarArchivo(banderaEND);
     		err = interprete.regresarErrores();
     		err.cerrarArchivo();

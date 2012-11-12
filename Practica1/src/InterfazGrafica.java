@@ -35,8 +35,6 @@ import javax.swing.border.SoftBevelBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.ComponentOrientation;
 
-
-
 // TODO: Auto-generated Javadoc
 /**
  * La Clase InterfazGrafica. Clase encarga de toda la parte visual de programa y del manejo de eventos
@@ -115,8 +113,6 @@ public class InterfazGrafica extends JFrame {
 			return comp;
 			}
 		}
-
-	
 
 	/**
 	 * Create the frame.

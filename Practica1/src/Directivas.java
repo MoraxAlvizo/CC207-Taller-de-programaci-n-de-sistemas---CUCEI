@@ -195,23 +195,39 @@ class Directivas {
 		
 		int longitud=0;
 		int estado=0;
-							// "  ASCII
-		int automataFCC[][]= {{ 1,-1,-1}, //0
-							  { 2, 1,-1}, //1
-							  {-1,-1,-1}};//2
+							// "   A  O  \
+		int automataFCC[][]= {{ 1,-1,-1,-1}, //0
+							  { 2, 1,-1, 3}, //1
+							  {-1,-1,-1,-1}, //2
+							  { 1, 1,-1, 1}, //3
+							  	};
 		
 		try{
 			for(char aux:operando.toCharArray()){
-				
-				if(aux=='\"')							 estado = automataFCC[estado][0];
-				else if((int)aux>=32 && (int)aux <= 127){estado = automataFCC[estado][1];longitud++;}
-				else								     estado = automataFCC[estado][2];
+				if(aux=='\"'){
+					if(estado == 3){
+						longitud++;
+					}
+					estado = automataFCC[estado][0];
+				}
+				else if(aux=='\\'){
+					if(estado == 3)longitud++;
+					estado = automataFCC[estado][3];
+				}
+				else if((int)aux>=32 && (int)aux <= 255){
+					estado = automataFCC[estado][1];
+					longitud++;
+				}
+				else{
+					estado = automataFCC[estado][2];
+				}
 				
 			}
 			
 		}catch(Exception e){
 			err.resultado(9, 2, linea);
 			return false;}
+		
 		if(estado ==2){
 			c.bytesPorIncrementar(longitud);
 			return true;

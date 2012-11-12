@@ -123,7 +123,7 @@ public class InterpretarLinea {
 			
 		if (!linea.isEmpty()&&linea.charAt(0)!=';')
 		{
-			linea=eliminarComentarios(linea);
+			//linea=eliminarComentarios(linea);
 			ArrayList<String> lista = Automata.separarTokens(linea);
 			int menu=lista.size();
 			Character primero = linea.charAt(0);

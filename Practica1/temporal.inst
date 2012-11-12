@@ -1,34 +1,5 @@
 LINEA     CONTLOC     ETIQUETA    CODOP       OPERANDO             MODO
 .......................................................................................
-1         1000        NULL        ORG         4096                 null
-2         1000        NULL        SUBD        #4096                IMM16
-3         1003        NULL        SUBD        #$00FF               IMM16
-4         1006        ET2         SUBD        #0                   IMM16
-5         1009        NULL        ABA         NULL                 INH
-6         100b        NULL        ASLD        NULL                 INH
-7         100c        NULL        BGND        NULL                 INH
-8         100d        ET3         SBCA        #$0                  IMM8
-9         100f        NULL        SBCA        #255                 IMM8
-10        1011        NULL        LDAA        $55                  DIR
-11        1013        NULL        LDAA        $0055                DIR
-12        1015        NULL        LDX         $20                  DIR
-13        1017        NULL        SBCA        #@75                 IMM8
-14        1019        NULL        SUBA        4096                 EXT
-15        0038        ET1         EQU         $38                  null
-16        101c        NULL        LDAA        $1FF                 EXT
-17        101f        NULL        LDAA        $0FFFF               EXT
-18        1022        NULL        ADDB        $0FFF                EXT
-19        1025        NULL        LDAA        ET1                  EXT
-20        1028        NULL        SUBA        180                  DIR
-21        102a        NULL        LDAA        #$55                 IMM8
-22        102c        ET4         LDX         #$1234               IMM16
-23        102f        NULL        LDY         #$67                 IMM16
-24        1032        NULL        IDIV        NULL                 INH
-25        1034        NULL        DEX         NULL                 INH
-26        1035        NULL        SUBA        4096                 EXT
-27        1038        NULL        SUBA        180                  DIR
-28        103a        NULL        ASL         1                    EXT
-29        103d        NULL        CLV         NULL                 IMM
-30        103f        ET5         BRSET       ET0                  EXT
-31        1044        NULL        ADCB        $0f                  DIR
-32        1046        NULL        END         NULL                 null
+1         0000        NULL        ORG         0                    null
+2         0000        NULL        FCC         "taller de programación de sistemas" null
+3         0022        NULL        END         NULL                 null

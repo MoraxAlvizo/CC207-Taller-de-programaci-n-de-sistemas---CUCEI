@@ -76,12 +76,17 @@ public class Automata {
 		ArrayList <String> listaTokens = new ArrayList<String>();
 		String aux = "";
 		int estado = 0;
-		int [][] automata = {//  E	C  "
-							   { 0, 1, 2},	//0
-							   { 0, 1, 1},	//1
-							   { 2, 2, 0},};//2
+		int [][] automata = {//  E	C  "  ;  \
+							   { 0, 1, 2, 3, 1},	//0
+							   { 0, 1, 1, 3, 1},	//1
+							   { 2, 2, 0, 2, 4},	//2
+							   {-1,-1,-1,-1,-1},	//3
+							   { 2, 2, 2, 2, 2},	//4
+							   			};
 		
 		for(char c:linea.toCharArray()){
+
+			if(estado == 3)break;
 			switch(c){
 			case ' ':case'\t':
 				if(estado == 1){
@@ -95,7 +100,7 @@ public class Automata {
 				break;
 			case'\"':
 				if(estado == 2){
-					listaTokens.add(aux+c);
+					listaTokens.add(aux+=c);
 					aux = "";
 					estado = automata[estado][2];
 				}
@@ -104,10 +109,20 @@ public class Automata {
 					aux +=c;
 				}	
 				break;
+			case ';':
+				if(estado != 1 && estado !=0)
+					aux +=c;
+				estado = automata[estado][3];
+				break;
+			case '\\':
+				estado = automata[estado][4];
+				aux+=c;
+				break;
 			default:		 
 				estado = automata[estado][1];
 				aux +=c;
 			}
+			
 		}
 		if(!aux.isEmpty()){
 			listaTokens.add(aux);
