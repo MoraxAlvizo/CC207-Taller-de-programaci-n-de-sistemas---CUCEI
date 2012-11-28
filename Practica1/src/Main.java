@@ -29,11 +29,15 @@ public class Main{
 				}
 			}
 		});
-		/*
-		for(int i=0;i<255;i++){
-			System.out.println("caracter : "+(char)i+" ASCII: "+i);
-		}*/
 		
+		Integer i = 1000;
+		System.out.println("Sin complemento a 1 = "+i);
+		System.out.println(Integer.toHexString(i));
+		i = ~i;
+		System.out.println("Con complemento a 1 = "+i);
+		System.out.println(Integer.toHexString(i));
+		int largo =Integer.toHexString(i).length();
+		System.out.println(Integer.toHexString(i).substring(largo-2,largo));
 	}
 	
 

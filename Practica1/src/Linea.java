@@ -83,6 +83,9 @@ class Linea {
 		return directiva.regresarDirectiva();
 	}
     
+	String regresarCodigoMaquina(){
+		return codigomaquina;
+	}
 	void actualizarEtiqueta(){
 		if(etiqueta != null)
 			etiqueta.actualizarConloc(this.contador);

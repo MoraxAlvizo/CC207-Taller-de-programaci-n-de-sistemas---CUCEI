@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 class GeneradorDeCodigoMaquina {
@@ -53,7 +54,7 @@ class GeneradorDeCodigoMaquina {
 	}
 	
 	
-	public void generarCodigo() throws IOException{
+	public void generarCodigo(DefaultTableModel s19) throws IOException{
 		String linea;
 		Boolean banderaError = new Boolean(true);
 		Boolean banderaRecalculo = false;
@@ -103,18 +104,26 @@ class GeneradorDeCodigoMaquina {
 			    }
 			    if(banderaError){
 			    	archivoinst.add(nueva);
+			    }
+			    else{
 			    	banderaRecalculo = true;
 			    }
-			  	
-			    else continue;
 			    
 			}
 			else i++;
 		}
 		
-		if(banderaRecalculo)this.recalcularContadorDeLocalidades();
+		if(banderaRecalculo){
+			this.recalcularContadorDeLocalidades();
+			this.resultado();
+			JOptionPane.showMessageDialog(null,"Archivo s19 no creado por que tiene errores en la segunda pasada","ERROR", JOptionPane.ERROR_MESSAGE);
+		}else{
+			GeneradorCodigoObjeto gco = new GeneradorCodigoObjeto(this,this.direccion,s19);
+			gco.generarCodigo();
+		}
 		this.resultado();
 		this.cerrarArchivo();
+		
 		err.cerrarArchivo();
 	}
 	
@@ -232,7 +241,7 @@ class GeneradorDeCodigoMaquina {
 			
 			xb = xb.replace("rr", registro);
 			xb = xb.replace("aa", acumulador);
-			xb = this.regresarDigitosNecesarios(Integer.parseInt(xb,2),1);
+			xb = regresarDigitosNecesarios(Integer.parseInt(xb,2),1);
 			codigomaquina+=xb;
 			linea.asignarCodigoMaquina(codigomaquina);
 			return true;	
@@ -257,7 +266,7 @@ class GeneradorDeCodigoMaquina {
 				xb = xb.replace("nnnnn", nohexa);
 				
 			}	
-			xb = this.regresarDigitosNecesarios(Integer.parseInt(xb,2),1);
+			xb = regresarDigitosNecesarios(Integer.parseInt(xb,2),1);
 			codigomaquina+=xb;
 			linea.asignarCodigoMaquina(codigomaquina);
 			return true;
@@ -281,7 +290,7 @@ class GeneradorDeCodigoMaquina {
 			else xb = xb.replace("nnnn", prepost[1][nodecimal-1]);
 			
 			xb = xb.replace("rr", registro);
-			xb = this.regresarDigitosNecesarios(Integer.parseInt(xb,2),1);
+			xb = regresarDigitosNecesarios(Integer.parseInt(xb,2),1);
 			codigomaquina+=xb;
 			linea.asignarCodigoMaquina(codigomaquina);
 			return true;
@@ -305,7 +314,7 @@ class GeneradorDeCodigoMaquina {
 			else xb = xb.replace("nnnn", prepost[1][nodecimal-1]);
 			
 			xb = xb.replace("rr", registro);
-			xb = this.regresarDigitosNecesarios(Integer.parseInt(xb,2),1);
+			xb = regresarDigitosNecesarios(Integer.parseInt(xb,2),1);
 			codigomaquina+=xb;
 			linea.asignarCodigoMaquina(codigomaquina);
 			return true;
@@ -335,8 +344,8 @@ class GeneradorDeCodigoMaquina {
 		if(decimal >= 0) xb = xb.replace("s", "0");
 		else xb = xb.replace("s", "1");
 		
-		xb = this.regresarDigitosNecesarios(Integer.parseInt(xb,2),1);
-		codigomaquina= codigomaquina + xb + this.regresarDigitosNecesarios(decimal, bytes);
+		xb = regresarDigitosNecesarios(Integer.parseInt(xb,2),1);
+		codigomaquina= codigomaquina + xb + regresarDigitosNecesarios(decimal, bytes);
 		linea.asignarCodigoMaquina(codigomaquina);
 		return true;
 
@@ -359,8 +368,8 @@ class GeneradorDeCodigoMaquina {
 		registro = numeroDeRegistro(idx.nextToken());
 		xb = xb.replace("rr", registro);
 		
-		xb = this.regresarDigitosNecesarios(Integer.parseInt(xb,2),1);
-		codigomaquina= codigomaquina + xb + this.regresarDigitosNecesarios(decimal, 2);
+		xb = regresarDigitosNecesarios(Integer.parseInt(xb,2),1);
+		codigomaquina= codigomaquina + xb + regresarDigitosNecesarios(decimal, 2);
 		linea.asignarCodigoMaquina(codigomaquina);
 		return true;
 	}
@@ -377,7 +386,7 @@ class GeneradorDeCodigoMaquina {
 		registro = numeroDeRegistro(idx.nextToken());
 		xb = xb.replace("rr", registro);
 		 	
-		xb = this.regresarDigitosNecesarios(Integer.parseInt(xb,2),1);
+		xb = regresarDigitosNecesarios(Integer.parseInt(xb,2),1);
 		codigomaquina= codigomaquina + xb;
 		linea.asignarCodigoMaquina(codigomaquina);
 		return true;
@@ -462,7 +471,7 @@ class GeneradorDeCodigoMaquina {
 				
 	}
 	
-	public String regresarDigitosNecesarios(Integer decimal, Integer bytes){
+	static public String regresarDigitosNecesarios(Integer decimal, Integer bytes){
 		
 		String hexa = Integer.toHexString(decimal);
 		if(hexa.length() > bytes * 2){
@@ -587,4 +596,18 @@ class GeneradorDeCodigoMaquina {
 		else return null;
 	}
 	
+	String regresarTodoCodigoMaquina(){
+		
+		StringBuilder codigomaquina = new StringBuilder();
+		for(Linea l:archivoinst){
+			if(l.regresarCodigoMaquina() != null)
+			codigomaquina.append(l.regresarCodigoMaquina());
+		}
+		
+		return codigomaquina.toString();
+	}
+	
+	ArrayList<Linea> regresarArrayListInst(){
+		return this.archivoinst;
+	}
 }

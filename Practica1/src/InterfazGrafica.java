@@ -54,6 +54,9 @@ public class InterfazGrafica extends JFrame {
 	
 	/** The tabla tabsim. */
 	private JTable tabla_tabsim;
+
+	/** The tabla s19. */
+	private JTable tabla_s19;
 	
 	/** The resultado. */
 	DefaultTableModel resultado;
@@ -63,6 +66,9 @@ public class InterfazGrafica extends JFrame {
 	
 	/** The tabsim. */
 	DefaultTableModel tabsim;
+	
+	/** The s19. */
+	DefaultTableModel s19;
 	
 	/** The fc. */
 	@SuppressWarnings("unused")
@@ -187,13 +193,21 @@ public class InterfazGrafica extends JFrame {
 		scrollPane_3.setBackground(SystemColor.activeCaption);
 		panelConFichas.addTab("Tab. simbolos",null,scrollPane_3,"tds");
 		
+		JScrollPane scrollPane_4 = new JScrollPane();
+		scrollPane_4.setForeground(SystemColor.activeCaption);
+		scrollPane_4.setBorder(null);
+		scrollPane_4.setBackground(SystemColor.activeCaption);
+		panelConFichas.addTab("Codigo S19",null,scrollPane_4,"Codigo objeto");
+		
 		panelConFichas.setBackgroundAt(0,Color.LIGHT_GRAY);
 		panelConFichas.setBackgroundAt(1,Color.LIGHT_GRAY);
+		panelConFichas.setBackgroundAt(2,Color.LIGHT_GRAY);
 		
 		
 		inicializarTablaAnalizar();
 		inicializarTablaErrores();
 		inicializarTablaTabsim();
+		inicializarTablaS19();
 		scrollPane_1.setViewportView(table_1);
 		
 		JScrollPane scrollPane_2 = new JScrollPane();
@@ -202,6 +216,7 @@ public class InterfazGrafica extends JFrame {
 
 		scrollPane_2.setViewportView(tabla_errores);
 		scrollPane_3.setViewportView(tabla_tabsim);
+		scrollPane_4.setViewportView(tabla_s19);
 		
 		
 		JButton btnAnalizar = new JButton("Analizar");
@@ -218,7 +233,7 @@ public class InterfazGrafica extends JFrame {
 				
 				if (bandera_analisis == false ){
 					try {
-						bandera_analisis = ensamblador.analizar(resultado,errores,tabsim);
+						bandera_analisis = ensamblador.analizar(resultado,errores,tabsim,s19);
 					} catch (IOException e1) {
 						e1.printStackTrace();
 					}
@@ -385,6 +400,37 @@ public class InterfazGrafica extends JFrame {
 
 	}
 	
+	public void inicializarTablaS19(){
+		MyRenderer r= new MyRenderer(Color.DARK_GRAY ,Color.LIGHT_GRAY);
+		s19 = new DefaultTableModel();
+		s19.addColumn("Reg.");
+		s19.addColumn("Long");
+		s19.addColumn("Dir.");
+		s19.addColumn("Codigo o datos");
+		s19.addColumn("Checksum");
+		tabla_s19 = new JTable(s19);
+		tabla_s19.setBorder(null);
+		tabla_s19.setGridColor(SystemColor.activeCaption);
+		tabla_s19.setSelectionBackground(Color.LIGHT_GRAY);
+		tabla_s19.setForeground(Color.WHITE);
+		tabla_s19.setBackground(SystemColor.activeCaption);
+		tabla_s19.setEnabled(false);
+		tabla_s19.getColumnModel().getColumn(0).setHeaderRenderer(r);
+		tabla_s19.getColumnModel().getColumn(1).setHeaderRenderer(r);
+		tabla_s19.getColumnModel().getColumn(2).setHeaderRenderer(r);
+		tabla_s19.getColumnModel().getColumn(3).setHeaderRenderer(r);
+		tabla_s19.getColumnModel().getColumn(4).setHeaderRenderer(r);
+		tabla_s19.getColumnModel().getColumn(0).setMaxWidth(30);
+		tabla_s19.getColumnModel().getColumn(0).setPreferredWidth(30);
+		tabla_s19.getColumnModel().getColumn(1).setMaxWidth(40);
+		tabla_s19.getColumnModel().getColumn(1).setPreferredWidth(40);
+		tabla_s19.getColumnModel().getColumn(2).setMaxWidth(50);
+		tabla_s19.getColumnModel().getColumn(2).setPreferredWidth(50);
+		tabla_s19.getColumnModel().getColumn(4).setMaxWidth(100);
+		tabla_s19.getColumnModel().getColumn(4).setPreferredWidth(100);
+
+	}
+	
 	/**
 	 * Vaciar tablas.
 	 */
@@ -398,5 +444,9 @@ public class InterfazGrafica extends JFrame {
 		while (tabsim.getRowCount()!=0){
             tabsim.removeRow(0);
 		}
+		while (s19.getRowCount()!=0){
+            s19.removeRow(0);
+		}
+		
 	}
 }

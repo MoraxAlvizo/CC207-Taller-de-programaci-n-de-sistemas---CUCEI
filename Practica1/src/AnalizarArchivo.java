@@ -13,18 +13,19 @@ import javax.swing.table.DefaultTableModel;
  */
 public class AnalizarArchivo {
 
-    
     /** El interprete. Atributo que analizara linea por linea */
     InterpretarLinea interprete;
     
     /** El direccion. nombre de la direccion */
     String direccion;
     
+    Boolean banderaError;
+    
     File archivo;
     FileReader fr;
     BufferedReader br;
    
-
+    
     /**
      * Instantiates a new analizar archivo.
      *
@@ -34,6 +35,7 @@ public class AnalizarArchivo {
     	
     	archivo = null;
         interprete = new InterpretarLinea();
+        banderaError = false;
         
     }
     
@@ -47,7 +49,8 @@ public class AnalizarArchivo {
     	this.direccion=direccion.getAbsolutePath();
     	archivo = direccion;
         fr = new FileReader (archivo);
-        br = new BufferedReader(fr);	   
+        br = new BufferedReader(fr);	 
+        
     }// fin del metodo
     
     /**
@@ -74,7 +77,7 @@ public class AnalizarArchivo {
      * @return true, if successful
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    boolean analizar(DefaultTableModel ints, DefaultTableModel errores,DefaultTableModel tabsim)throws IOException{
+    boolean analizar(DefaultTableModel ints, DefaultTableModel errores,DefaultTableModel tabsim,DefaultTableModel s19)throws IOException{
     	String linea;
     	int contador=0;
     	boolean banderaEND = false;
@@ -105,7 +108,7 @@ public class AnalizarArchivo {
     		err.cerrarArchivo();
     		if(!err.regresarBanderaError()){
     			GeneradorDeCodigoMaquina a = new GeneradorDeCodigoMaquina(direccion,interprete.regresarTabop(),interprete.regresarTabSim(), ints, errores);
-        		a.generarCodigo();
+        		a.generarCodigo(s19);
             	JOptionPane.showMessageDialog(null,"Archivo creado en: "+ direccion.replace(".asm", ".ints"));
     		}
     		else JOptionPane.showMessageDialog(null,"Archivo inst no creado por que tiene errores","ERROR", JOptionPane.ERROR_MESSAGE);
@@ -129,6 +132,8 @@ public class AnalizarArchivo {
     	if(archivo != null)return true;
     	else return false;
     }
+    
+    
     
     
 }
